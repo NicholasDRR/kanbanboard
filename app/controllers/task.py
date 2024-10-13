@@ -30,7 +30,7 @@ class TaskController:
     def modify_task(self, item_id: str, task_update: TaskUpdate):
         updated_task = update_task(item_id, task_update)
         if updated_task:
-            self.redis_service.set(item_id, updated_task.json())
+            self.redis_service.set(item_id, task_update.json())
         else:
             self.redis_service.delete(item_id)
 

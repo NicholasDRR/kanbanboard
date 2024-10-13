@@ -33,6 +33,15 @@ services:
       - my-redis
     networks: 
       - app-network
+    
+  frontend:
+    build:
+      context: app/views # substitua pelo caminho correto onde estão os arquivos do frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:80  # mapeia a porta 80 do container para a porta 3000 local
+    networks:
+      - app-network
 
 networks: 
   app-network:

@@ -1,7 +1,7 @@
-from ..config.logging import logger
-from ..database.database import connect_to_postgres as connect_db
-from ..database.ddl import create_tables as create_tb, create_database as create_db
-from ..parameters import POSTGRES_HOST, POSTGRES_DATABASE, POSTGRES_PORT, POSTGRES_PASSWORD, POSTGRES_USER
+from app.config.logging import logger
+from app.database.database import connect_to_postgres as connect_db
+from app.database.ddl import create_tables as create_tb, create_database as create_db
+from app.parameters import POSTGRES_HOST, POSTGRES_DATABASE, POSTGRES_PORT, POSTGRES_PASSWORD, POSTGRES_USER
 
 
 
@@ -69,12 +69,3 @@ class DatabaseService:
         if self.connection:
             self.connection.close()
             logger.info("Database connection closed.")
-
-if __name__ == '__main__':
-    db_service = DatabaseService()
-    try:
-        db_service.initialize()
-    except Exception as e:
-        logger.error(f"An error occurred: {e}")
-    finally:
-        db_service.close_connection()

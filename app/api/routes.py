@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.controllers.task import TaskController
 from app.models.task import Task, TaskUpdate
+from app.config.logging import logger
 
 router = APIRouter(
     prefix="/tasks",
@@ -29,6 +30,7 @@ def post_task(task: Task):
 
 @router.put("/task/update")
 def update_task(item_id: str, task: TaskUpdate):
+    logger.info(task)
     return task_controller.modify_task(item_id, task)
 
 @router.delete("/task/delete")

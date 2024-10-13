@@ -32,14 +32,35 @@ def create_tables(cursor):
     END $$;
     """)
 
+    # Criando a tabela 'users' se não existir
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL
+    );
+    """)
+
     # Criando a tabela 'tasks' se não existir
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS tasks (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID NOT NULL,
         title VARCHAR(255) NOT NULL,
         type VARCHAR(100) NOT NULL,
         description TEXT NOT NULL,
         status task_status NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
+    """)
+
+    # Criando a tabela 'Revoked_Tokens' se não existir
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS Revoked_Tokens (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id BIGINT NOT NULL,
+        token VARCHAR(255) NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
     """)

@@ -32,4 +32,6 @@ sudo service redis-server start
 
 run dockercompose 
 sudo docker compose up
-# mayo-test
+
+
+ sudo docker compose up --build;
