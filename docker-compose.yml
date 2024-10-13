@@ -48,15 +48,18 @@ services:
       - my-mongodb
     networks: 
       - app-network
-    
-  frontend:
+
+  app-front:
     build:
-      context: app/views # Replace with the correct path to your frontend files
-      dockerfile: Dockerfile
+      context: ./frontend/
     ports:
-      - 3000:80  # Maps port 80 of the container to local port 3000
-    networks:
+      - 8080:80
+    depends_on:
+      - app
+    networks: 
       - app-network
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
 
 networks: 
   app-network:

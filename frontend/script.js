@@ -1,13 +1,31 @@
-// Mock JWT token (replace this with the actual token in a real application)
-const mockJwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4N2I2MzNiYy1mN2YzLTQwYjItYWNlZi1kYmIxMDk2ZjU4ZjAiLCJleHAiOjE3MzE0MjkyNTh9.KquafqgLrj1vaPi6kXXnCfxeKESHr75HEvk9NJTLAu4';
-
 const backEndUrl = 'http://localhost:8000/tasks';
+let current_task = ''
+
+function getJwtToken() {
+    return localStorage.getItem('jwtToken'); 
+}
+
+function checkAuth() {
+    const token = localStorage.getItem('jwtToken');
+    
+    if (!token) {
+        window.location.href = "http://localhost:8080/login"; // Altere para a URL da sua página de login
+    }
+}
 
 $(document).ready(function() {
     readTasks();
     readCompletedTasks();
+    getJwtToken();
+    checkAuth();
     $('#create-new-task-block').hide();
 });
+
+
+function setCurrentTaskId(taskId) {
+    current_task =  taskId
+}
+
 
 function createTask() {
     var x = document.getElementById("inprogress");
@@ -29,7 +47,7 @@ function createTask() {
     }
 }
 
-function updateTask() {
+function updateTaskModal() {
     var x = document.getElementById("inprogress");
     var y = document.getElementById("done");
     var z = document.getElementById("update-task-block");
@@ -69,7 +87,7 @@ function addTaskToBoard(task) {
         newTask.innerHTML = `
             <span onclick="showTaskDetails('${task.id}')">${task.title}</span>
             <button onclick="deleteTask('${task.id}')" style="margin-left: 10px;">Remove</button>
-            <button id="${task.id}" onclick="updateTask()" style="margin-left: 10px;">Edit</button>
+            <button onclick="updateTaskModal(); setCurrentTaskId('${task.id}');" style="margin-left: 10px;">Edit</button>
         `;
     }
 
@@ -82,7 +100,6 @@ function addTaskToBoard(task) {
         document.getElementById("done").appendChild(newTask);
     }
 }
-
 
 
 function saveTask() {
@@ -102,7 +119,7 @@ function saveTask() {
         url: "http://localhost:8000/tasks/task/post",
         type: "POST",
         headers: {
-            'Authorization': `Bearer ${mockJwtToken}`,
+            'Authorization': `Bearer ${getJwtToken() }`,
             'Accept': 'application/json'
         },
         contentType: "application/json",
@@ -125,7 +142,7 @@ function deleteTask(taskId) {
         url: `http://localhost:8000/tasks/task/delete?item_id=${taskId}`,
         type: "DELETE",
         headers: {
-            'Authorization': `Bearer ${mockJwtToken}`,
+            'Authorization': `Bearer ${getJwtToken() }`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
@@ -144,7 +161,7 @@ function readTasks() {
         url: "http://localhost:8000/tasks/",
         type: "GET",
         headers: {
-            'Authorization': `Bearer ${mockJwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json'
         },
         success: function(tasks) {
@@ -163,7 +180,7 @@ function readCompletedTasks() {
         url: "http://localhost:8000/tasks/completed",
         type: "GET",
         headers: {
-            'Authorization': `Bearer ${mockJwtToken}`,
+            'Authorization': `Bearer ${getJwtToken() }`,
             'Accept': 'application/json'
         },
         success: function(tasks) {
@@ -177,7 +194,7 @@ function readCompletedTasks() {
     });
 }
 
-function updateTaskDB(taskId) {
+function updateTaskDB() {
     var updateTaskName = document.getElementById("update-task-name").value;
     var updateTaskDescription = document.getElementById("update-task-description").value;
     var updateTaskType = document.getElementById("update-task-type").value;
@@ -191,17 +208,17 @@ function updateTaskDB(taskId) {
     };
 
     $.ajax({
-        url: `http://localhost:8000/tasks/task/update?item_id=${taskId}`,
+        url: `http://localhost:8000/tasks/task/update?item_id=${current_task}`,
         type: "PUT",
         headers: {
-            'Authorization': `Bearer ${mockJwtToken}`,
+            'Authorization': `Bearer ${getJwtToken() }`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         data: JSON.stringify(updateTaskData),
         success: function(response) {
             console.log("Task updated successfully:", response);
-            
+            location.reload();
         },
         error: function(xhr, status, error) {
             console.error("Error updating task:", error);
@@ -214,7 +231,7 @@ function showTaskDetails(taskId) {
         url: `http://localhost:8000/tasks/task?item_id=${taskId}`,
         type: "GET",
         headers: {
-            'Authorization': `Bearer ${mockJwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json'
         },
         success: function(response) {
