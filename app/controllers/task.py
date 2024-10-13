@@ -1,7 +1,9 @@
 from fastapi import HTTPException
 from app.database.tasks import get_all_tasks, get_task, insert_task, update_task, delete_task
+from app.database.database import get_mongodb_tasks_collection
 from app.models.task import Task, TaskUpdate
 from app.services.redis_service import RedisService
+from app.config.logging import logger
 
 
 class TaskController:
@@ -29,6 +31,14 @@ class TaskController:
     
     def modify_task(self, item_id: str, task_update: TaskUpdate):
         updated_task = update_task(item_id, task_update)
+        
+        if task_update.status == 'completed':
+            tasks_collection = get_mongodb_tasks_collection()
+            result = tasks_collection.insert_one({item_id: task_update})
+            logger.info(result)
+            
+            
+        
         if updated_task:
             self.redis_service.set(item_id, task_update.json())
         else:

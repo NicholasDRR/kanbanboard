@@ -59,9 +59,11 @@ class UserController:
     def return_token(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
         payload = self.decode_token(token)
         user_id = payload['sub'] 
+        
         existing_token = self.redis_service.get_token(user_id)
         if existing_token:
-            return existing_token
+            payload = self.decode_token(token)
+            return payload
         
         self.check_token_revocation(token, payload['sub'])
         return payload
@@ -72,7 +74,8 @@ class UserController:
         
         existing_token = self.redis_service.get_token(user_id)
         if existing_token:
-            return existing_token
+            payload = self.decode_token(token)
+            return payload
         
         self.check_token_revocation(token, payload['sub'])
         return payload

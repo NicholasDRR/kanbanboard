@@ -21,3 +21,4 @@ typing_extensions==4.12.2
 uvicorn==0.31.1
 redis==5.0.0
 passlib==1.7.4
+pymongo==4.10.1
