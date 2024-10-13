@@ -2,54 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Task Management</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        h1 {
-            color: #333;
-        }
-        .task-form {
-            margin-bottom: 20px;
-        }
-        .task-form input, .task-form textarea {
-            margin: 5px 0;
-            display: block;
-        }
-        .task-list {
-            margin-top: 20px;
-        }
-        .task-item {
-            border-bottom: 1px solid #ccc;
-            padding: 10px 0;
-        }
-        .task-actions button {
-            margin-right: 5px;
-        }
-    </style>
 </head>
 <body>
+    <h1>Create User</h1>
+    <form id="createUserForm">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Create User</button>
+    </form>
 
-    <h1>Task Management</h1>
+    <div id="responseMessage"></div>
 
-    <div class="task-form">
-        <h2>Create Task</h2>
-        <form id="taskForm">
-            <input type="text" id="title" placeholder="Title" required>
-            <input type="text" id="type" placeholder="Type" required>
-            <textarea id="description" placeholder="Description" required></textarea>
-            <input type="text" id="status" placeholder="Status" required>
-            <button type="submit">Add Task</button>
-        </form>
-    </div>
+    <script>
+        $(document).ready(function () {
+            $('#createUserForm').on('submit', function (e) {
+                e.preventDefault(); // Prevent the form from submitting normally
 
-    <div class="task-list">
-        <h2>Task List</h2>
-        <div id="tasks"></div>
-    </div>
+                const userData = {
+                    email: $('#email').val(),
+                    password: $('#password').val()
+                };
 
-    <script src="script.js"></script>
+                $.ajax({
+                    url: '/users/user/post',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(userData),
+                    success: function (response) {
+                        $('#responseMessage').text('User created successfully: ' + response);
+                    },
+                    error: function (xhr, status, error) {
+                        $('#responseMessage').text('Error creating user: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

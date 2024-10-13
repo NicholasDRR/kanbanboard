@@ -18,7 +18,6 @@ def connect_to_postgres(host: str = POSTGRES_HOST, port: str = POSTGRES_PORT, db
     :return: Uma tupla contendo a conexão e o cursor
     """
     try:
-        # Estabelecer a conexão
         conn = psycopg2.connect(
             host=host,
             port=port,
@@ -27,8 +26,6 @@ def connect_to_postgres(host: str = POSTGRES_HOST, port: str = POSTGRES_PORT, db
             password=password
         )
         conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-
-        # Criar um cursor
         cursor = conn.cursor()
         logger.info("Conexão ao banco de dados estabelecida com sucesso.")
         return conn, cursor
@@ -39,7 +36,7 @@ def connect_to_postgres(host: str = POSTGRES_HOST, port: str = POSTGRES_PORT, db
     
 
 def get_mongodb_tasks_collection(host: str = MONGODB_HOST, port: int = MONGODB_PORT, username: str = MONGODB_USERNAME,
-                                 password: str = MONGODB_PASSWORD, database_name: str = MONGODB_DATABASE, logger=logger):
+                                password: str = MONGODB_PASSWORD, database_name: str = MONGODB_DATABASE, logger=logger):
     """
     Estabelece uma conexão com o banco de dados MongoDB, cria a coleção 'tasks' se não existir, e a retorna.
 

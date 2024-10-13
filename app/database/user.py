@@ -35,10 +35,10 @@ def get_user_by_email(email: str):
     
     try:
         cursor.execute(query, (email,))
-        user = cursor.fetchone()  # Fetch a single user record
+        user = cursor.fetchone() 
         
         if user:
-            return User(id=user[0], email=user[1], password=user[2])  # Assuming User model has id, email, and password
+            return User(id=user[0], email=user[1], password=user[2]) 
         return None
     except Exception as error:
         logger.error(f"Error fetching user by email: {error}")
@@ -58,13 +58,13 @@ def create_user(email: str, password: str):
     
     try:
         cursor.execute(query, (email, password))
-        user_id = cursor.fetchone()[0]  # Get the generated user ID
-        connection.commit()  # Commit the transaction
-        return user_id  # Return the new user's ID
+        user_id = cursor.fetchone()[0]  
+        connection.commit() 
+        return user_id  
 
     except Exception as error:
         logger.error(f"Error creating user: {error}")
-        connection.rollback()  # Rollback in case of error
+        connection.rollback() 
         return None
 
     finally:
@@ -79,10 +79,10 @@ def get_user_by_id(user_id: int):
     
     try:
         cursor.execute(query, (user_id,))
-        user = cursor.fetchone()  # Fetch a single user record
+        user = cursor.fetchone()  
         
         if user:
-            return User(id=user[0], email=user[1], password=user[2])  # Return User object
+            return User(id=user[0], email=user[1], password=user[2])  
         return None
 
     except Exception as error:
@@ -107,18 +107,17 @@ def update_user(user_id: int, email: str = None, password: str = None):
         query += "password = %s, "
         params.append(password)
     
-    # Remove trailing comma and space
     query = query.rstrip(", ") + " WHERE id = %s;"
     params.append(user_id)
     
     try:
         cursor.execute(query, tuple(params))
-        connection.commit()  # Commit the transaction
-        return user_id  # Return the updated user's ID
+        connection.commit()  
+        return user_id  
 
     except Exception as error:
         logger.error(f"Error updating user: {error}")
-        connection.rollback()  # Rollback in case of error
+        connection.rollback() 
         return None
 
     finally:
@@ -133,12 +132,12 @@ def delete_user(user_id: int):
     
     try:
         cursor.execute(query, (user_id,))
-        connection.commit()  # Commit the transaction
-        return user_id  # Return the deleted user's ID
+        connection.commit()  
+        return user_id  
 
     except Exception as error:
         logger.error(f"Error deleting user: {error}")
-        connection.rollback()  # Rollback in case of error
+        connection.rollback() 
         return None
 
     finally:

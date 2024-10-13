@@ -21,6 +21,11 @@ def read_tasks(current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
     return task_controller.read_tasks(user_id)
 
+@router.get("/completed", dependencies=[Depends(get_current_user)])
+def read_completed_tasks(current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return task_controller.read_completed_tasks(user_id)
+
 @router.get("/task/", dependencies=[Depends(get_current_user)])
 def read_task(item_id: str, current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']

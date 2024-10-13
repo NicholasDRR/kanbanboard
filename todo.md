@@ -1,7 +1,7 @@
 - Back-end (Python): X
 
 
-MongoDB, PostgreSQL e Redis.
+MongoDB, PostgreSQL e Redis. X
 
 
 - Utilize Flask ou FastAPI para criar uma API que permita: X
@@ -25,14 +25,18 @@ armazenar as tarefas de maneira persistente. X
 - Gerenciar os dados usando Redis (para dados em cache) e outro banco de
 dados para persistência. X
 
-
-
 - Segurança:
 - Implementar medidas básicas de segurança, como a sanitização das entradas
 para evitar injeção de código e uso de HTTPS.
 - Utilizar autenticação básica (usuário e senha) com JWT (JSON Web Token) para
-garantir que apenas usuários autenticados possam adicionar ou remover tarefas.
+garantir que apenas usuários autenticados possam adicionar ou remover tarefas. X
 
+
+
+- Git & GitHub:
+- Utilizar Git para versionamento do código. Todo o desenvolvimento deve ser
+feito em um repositório público no GitHub. Envie o link do repositório ao final do
+desafio. X
 
 
 
@@ -57,7 +61,3 @@ estáticos (se houver).
 
 
 
-- Git & GitHub:
-- Utilizar Git para versionamento do código. Todo o desenvolvimento deve ser
-feito em um repositório público no GitHub. Envie o link do repositório ao final do
-desafio.

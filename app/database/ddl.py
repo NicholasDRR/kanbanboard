@@ -5,7 +5,6 @@ def create_database(cursor):
     """)
     
     if not cursor.fetchone():
-        # Commit any ongoing transaction before creating the database
         cursor.connection.rollback()  # Commit para sair da transação atual
         cursor.execute("""
         CREATE DATABASE task_management;

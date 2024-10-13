@@ -39,18 +39,17 @@ class DatabaseService:
         else:
             logger.info("Database 'task_management' created successfully.")
         finally:
-            self.close_connection()  # Close connection in the end
+            self.close_connection() 
 
 
     def create_tables(self):
         """Create tables in the PostgreSQL database."""
         try:
-            # Reconnect to the newly created database to create tables
-            self.connect_to_postgres(db_name=POSTGRES_DATABASE)  # Connect to the new database
+            self.connect_to_postgres(db_name=POSTGRES_DATABASE) 
             create_tb(self.cursor)
         except Exception as e:
             logger.error(f"Failed to create tables: {e}")
-            raise  # Re-raise the exception for further handling
+            raise 
         else:
             logger.info("Tables created successfully.")
         finally:
@@ -58,8 +57,8 @@ class DatabaseService:
         
     def initialize(self):
         """Initialize the database service by creating the database and tables."""
-        self.create_database()  # Create the database
-        self.create_tables()     # Create the tables in the new database
+        self.create_database() 
+        self.create_tables()     
 
     def close_connection(self):
         """Close the database connection."""

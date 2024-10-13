@@ -1,5 +1,4 @@
-from fastapi import APIRouter,status, HTTPException, Depends
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter
 from app.controllers.user import UserController
 from app.models.user import User, UserUpdate
 
