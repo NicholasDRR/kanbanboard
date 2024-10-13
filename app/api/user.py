@@ -12,14 +12,14 @@ router = APIRouter(
 
 user_controller = UserController()
 
-@router.get("/")
-def read_users():
-    return user_controller.read_users()
+# @router.get("/")
+# def read_users():
+#     return user_controller.read_users()
 
 
-@router.get("/user/")
-def read_user(user_id: str):
-    return user_controller.read_user(user_id=user_id)
+# @router.get("/user/")
+# def read_user(user_id: str):
+#     return user_controller.read_user(user_id=user_id)
 
 
 @router.post("/user/post")
@@ -32,6 +32,6 @@ def update_user(user_id: str, user: UserUpdate):
     return user_controller.update_user(user_id, user.email, user.password)
 
 
-@router.delete("/user/delete")
-def delete_user(user: str):
-    return user_controller.delete_user(user)
+# @router.delete("/user/delete")
+# def delete_user(user: str):
+#     return user_controller.delete_user(user)

@@ -15,7 +15,7 @@ from app.database.user import (
 from app.database.token import insert_revoked_tokens, select_revoked_token
 from app.parameters import ACCESS_TOKEN_EXPIRES, ALGORITHM, SECRET_KEY
 from app.config.logging import logger
-
+from app.services.redis_service import RedisService
 
 
 class UserController:
@@ -23,6 +23,7 @@ class UserController:
     def __init__(self):
         self.crypt = CryptContext(schemes=['bcrypt'])
         self.oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+        self.redis_service = RedisService()  # Initialize Redis service
         
     def create_hash(self, password):
         return self.crypt.hash(password)
@@ -57,11 +58,22 @@ class UserController:
     
     def return_token(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
         payload = self.decode_token(token)
+        user_id = payload['sub'] 
+        existing_token = self.redis_service.get_token(user_id)
+        if existing_token:
+            return existing_token
+        
         self.check_token_revocation(token, payload['sub'])
         return payload
     
     def verify_token_health(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
         payload = self.decode_token(token)
+        user_id = payload['sub'] 
+        
+        existing_token = self.redis_service.get_token(user_id)
+        if existing_token:
+            return existing_token
+        
         self.check_token_revocation(token, payload['sub'])
         return payload
     
@@ -70,17 +82,25 @@ class UserController:
         if not user_data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"msg": "User not found!"})
 
-        logger.info(user)
         if not self.validate_password(password=user.password, password_hash=user_data.password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail={"msg": "Invalid credentials"})
+
+        existing_token = self.redis_service.get_token(user_data.id)
+        if existing_token:
+            return existing_token
 
         payload = {
             'sub': str(user_data.id),
             'exp': datetime.utcnow() + timedelta(days=int(ACCESS_TOKEN_EXPIRES)),
         }
         
-        return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+        token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+        self.redis_service.set_token(token, user_data.id, expiry=int(ACCESS_TOKEN_EXPIRES))
+        return token
     
     def logout(self, token: str):
         payload = self.decode_token(token)
+        user_id = payload['sub'] 
+        self.redis_service.delete_token(user_id)
         return insert_revoked_tokens(user_id=payload['sub'], token=token)
