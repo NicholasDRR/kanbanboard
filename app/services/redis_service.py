@@ -1,6 +1,6 @@
 import redis
 from typing import Optional
-from ..parameters import REDIS_HOST, REDIS_PORT, REDIS_DB
+from app.parameters import REDIS_HOST, REDIS_PORT, REDIS_DB
 
 class RedisService:
     def __init__(self, host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB):

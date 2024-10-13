@@ -8,15 +8,15 @@ class TaskController:
     def __init__(self):
         self.redis_service = RedisService()
     
-    def read_tasks(self):
-        return get_all_tasks()
+    def read_tasks(self, user_id: str):
+        return get_all_tasks(user_id)
     
-    def read_task(self, item_id: str):       
+    def read_task(self, item_id: str, user_id: str):       
         cached_task = self.redis_service.get(item_id)       
         if cached_task:
             return cached_task
         
-        task = get_task(item_id)
+        task = get_task(item_id, user_id)
         if not task:
             raise HTTPException(status_code=404, detail="Task not found")
         return task
@@ -36,8 +36,8 @@ class TaskController:
 
         return updated_task
     
-    def remove_task(self, item_id: str):
-        delete_success = delete_task(item_id)
+    def remove_task(self, item_id: str, user_id: str):
+        delete_success = delete_task(item_id, user_id)
         if delete_success:
             self.redis_service.delete(item_id)
 

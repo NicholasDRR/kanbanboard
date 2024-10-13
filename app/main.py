@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router as router_tasks
 from app.api.authentication import router as router_authentication
 from app.api.user import router as router_user
-
+from app.services.database import DatabaseService
 
 app = FastAPI()
 

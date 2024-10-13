@@ -6,7 +6,7 @@ def select_revoked_token(user_id: int, token: str):
     
     query = """
     SELECT user_id, token
-    FROM onboarding_me.Revoked_Tokens
+    FROM Revoked_Tokens
     WHERE token = %s AND user_id = %s;
     """
     
@@ -28,14 +28,14 @@ def insert_revoked_tokens(user_id: int, token: str):
     connection, cursor = connect_to_postgres()
 
     query = """
-    INSERT INTO onboarding_me.Revoked_Tokens (user_id, token)
+    INSERT INTO Revoked_Tokens (user_id, token)
     VALUES (%s, %s);
     """
     
     try:
         cursor.execute(query, (user_id, token))
         connection.commit()  # Commit the transaction
-        return True  # Return True if the insert was successful
+        return token  # Return True if the insert was successful
 
     except Exception as error:
         logger.error(f"Error inserting revoked token: {error}")

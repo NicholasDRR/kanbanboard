@@ -11,13 +11,15 @@ services:
     volumes: 
       - cache:/data
     networks: 
-    - app-network
+      - app-network
 
   my-postgres:
     image: postgres:latest
     ports:
       - 5432:5432
     restart: always
+    environment:
+      POSTGRES_PASSWORD: 123  # Set your password here
     volumes: 
       - pgdata:/var/lib/postgresql/data
     networks: 
@@ -25,7 +27,7 @@ services:
 
   app:
     build:
-        context: .
+      context: .
     ports:
       - 8000:8000
     depends_on:
@@ -36,10 +38,10 @@ services:
     
   frontend:
     build:
-      context: app/views # substitua pelo caminho correto onde estão os arquivos do frontend
+      context: app/views # Replace with the correct path to your frontend files
       dockerfile: Dockerfile
     ports:
-      - 3000:80  # mapeia a porta 80 do container para a porta 3000 local
+      - 3000:80  # Maps port 80 of the container to local port 3000
     networks:
       - app-network
 
@@ -49,6 +51,5 @@ networks:
 
 volumes:
   pgdata:
-    external: true
   cache:
     driver: local

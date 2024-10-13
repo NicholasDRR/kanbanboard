@@ -59,7 +59,7 @@ def create_tables(cursor):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Revoked_Tokens (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-        user_id BIGINT NOT NULL,
+        user_id UUID NOT NULL, 
         token VARCHAR(255) NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );

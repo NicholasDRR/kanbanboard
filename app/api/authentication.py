@@ -26,7 +26,7 @@ def login(user: OAuth2PasswordRequestForm = Depends()):
 def logout(token: str = Depends(user_controller.return_token)):
     revoked_token = user_controller.logout(token)
     if revoked_token:
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"msg": "The token has been revoked!"})
+        return JSONResponse(status_code=status.HTTP_200_OK, content={"msg": f"The token has been revoked! {revoked_token}"})
     else:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={"msg": "The token has not been revoked!"}) 
 
@@ -41,6 +41,6 @@ def token_health_check(payload: dict = Depends(user_controller.verify_token_heal
         )
 
     return JSONResponse(
-        content={'msg': 'token is valid', 'employee': payload},
+        content={'msg': 'token is valid', 'token': payload},
         status_code=status.HTTP_200_OK
         )

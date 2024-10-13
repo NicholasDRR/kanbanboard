@@ -58,7 +58,7 @@ class UserController:
     def return_token(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
         payload = self.decode_token(token)
         self.check_token_revocation(token, payload['sub'])
-        return token
+        return payload
     
     def verify_token_health(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
         payload = self.decode_token(token)
