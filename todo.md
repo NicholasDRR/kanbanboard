@@ -44,7 +44,7 @@ desafio. X
 
 - Front-end:
 - Crie uma interface simples em HTML e CSS que se comunique com a API via
-JavaScript (AJAX).
+JavaScript (AJAX). 
 - A interface deve permitir:
 - Adicionar novas tarefas.
 - Atualizar o status de uma tarefa.

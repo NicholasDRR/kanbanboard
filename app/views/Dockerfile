@@ -1,14 +1,11 @@
-# Use the Nginx image as the base
+# Usa a imagem do Nginx como base
 FROM nginx:alpine
 
-# Copy the Nginx configuration file
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy the frontend files to the default Nginx directory
+# Copia os arquivos do frontend para o diretório padrão do Nginx
 COPY . /usr/share/nginx/html
 
-# Expose port 80 to serve the files
+# Expõe a porta 80 para servir os arquivos
 EXPOSE 80
 
-# Start Nginx
+# Inicia o Nginx
 CMD ["nginx", "-g", "daemon off;"]
