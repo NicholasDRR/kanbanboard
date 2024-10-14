@@ -1,6 +1,7 @@
 const backEndUrl = 'http://54.219.225.136:8000/tasks';
 let current_task = ''
 
+
 function getJwtToken() {
     return localStorage.getItem('jwtToken'); 
 }
