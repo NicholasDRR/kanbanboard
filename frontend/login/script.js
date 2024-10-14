@@ -46,7 +46,6 @@ document.getElementById('login-form').addEventListener('submit', async function 
 
     try {
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-        
         const response = await axios.post('http://54.219.225.136:8000/auth/login', new URLSearchParams({
             username: email,
             password: password
