@@ -18,6 +18,8 @@ document.getElementById('signup-form').addEventListener('submit', async function
     const password = document.getElementById('signup-password').value;
 
     try {
+        axios.defaults.headers.post['Content-Type'] ='application/json;charset=utf-8';
+        axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         const response = await axios.post('http://54.219.225.136:8000/users/user/post', {
             email: email,
             password: password
@@ -44,6 +46,8 @@ document.getElementById('login-form').addEventListener('submit', async function 
     }
 
     try {
+        axios.defaults.headers.post['Content-Type'] ='application/json;charset=utf-8';
+        axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
         const response = await axios.post('http://54.219.225.136:8000/auth/login', new URLSearchParams({
             username: email,
             password: password

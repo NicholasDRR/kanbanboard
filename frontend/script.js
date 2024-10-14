@@ -118,6 +118,7 @@ function saveTask() {
 
     $.ajax({
         url: "http://54.219.225.136:8000/tasks/task/post",
+        crossDomain: true,
         type: "POST",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -141,6 +142,7 @@ function saveTask() {
 function deleteTask(taskId) {
     $.ajax({
         url: `http://54.219.225.136:8000/tasks/task/delete?item_id=${taskId}`,
+        crossDomain: true,
         type: "DELETE",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -160,6 +162,7 @@ function deleteTask(taskId) {
 function readTasks() {
     $.ajax({
         url: "http://54.219.225.136:8000/tasks/",
+        crossDomain: true,
         type: "GET",
         headers: {
             'Authorization': `Bearer ${getJwtToken()}`,
@@ -179,6 +182,7 @@ function readTasks() {
 function readCompletedTasks() {
     $.ajax({
         url: "http://54.219.225.136:8000/tasks/completed",
+        crossDomain: true,
         type: "GET",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -210,6 +214,7 @@ function updateTaskDB() {
 
     $.ajax({
         url: `http://54.219.225.136:8000/tasks/task/update?item_id=${current_task}`,
+        crossDomain: true,
         type: "PUT",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -230,6 +235,7 @@ function updateTaskDB() {
 function showTaskDetails(taskId) {
     $.ajax({
         url: `http://54.219.225.136:8000/tasks/task?item_id=${taskId}`,
+        crossDomain: true,
         type: "GET",
         headers: {
             'Authorization': `Bearer ${getJwtToken()}`,
