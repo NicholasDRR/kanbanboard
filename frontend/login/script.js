@@ -17,7 +17,7 @@ document.getElementById('signup-form').addEventListener('submit', async function
     const password = document.getElementById('signup-password').value;
 
     try {
-        const response = await axios.post('http://localhost:8000/users/user/post', {
+        const response = await axios.post('http://54.219.225.136:8000/users/user/post', {
             email: email,
             password: password
         });
@@ -43,7 +43,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
     }
 
     try {
-        const response = await axios.post('http://localhost:8000/auth/login', new URLSearchParams({
+        const response = await axios.post('http://54.219.225.136:8000/auth/login', new URLSearchParams({
             username: email,
             password: password
         }));
@@ -52,7 +52,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
         alert('Login successful!');
         localStorage.setItem('jwtToken', response.data.access_token);
 		
-		window.location.href = "http://localhost:8080/";
+		window.location.href = "http://54.219.225.136:80/";
     } catch (error) {
         console.error('Error logging in:', error);
         alert('Error logging in. Please check your credentials and try again.'); 

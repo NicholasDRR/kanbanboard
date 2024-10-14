@@ -1,4 +1,4 @@
-const backEndUrl = 'http://localhost:8000/tasks';
+const backEndUrl = 'http://54.219.225.136:8000/tasks';
 let current_task = ''
 
 function getJwtToken() {
@@ -9,7 +9,7 @@ function checkAuth() {
     const token = localStorage.getItem('jwtToken');
     
     if (!token) {
-        window.location.href = "http://localhost:8080/login"; // Altere para a URL da sua página de login
+        window.location.href = "http://54.219.225.136:80/login"; // Altere para a URL da sua página de login
     }
 }
 
@@ -116,7 +116,7 @@ function saveTask() {
     };
 
     $.ajax({
-        url: "http://localhost:8000/tasks/task/post",
+        url: "http://54.219.225.136:8000/tasks/task/post",
         type: "POST",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -139,7 +139,7 @@ function saveTask() {
 
 function deleteTask(taskId) {
     $.ajax({
-        url: `http://localhost:8000/tasks/task/delete?item_id=${taskId}`,
+        url: `http://54.219.225.136:8000/tasks/task/delete?item_id=${taskId}`,
         type: "DELETE",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -158,7 +158,7 @@ function deleteTask(taskId) {
 
 function readTasks() {
     $.ajax({
-        url: "http://localhost:8000/tasks/",
+        url: "http://54.219.225.136:8000/tasks/",
         type: "GET",
         headers: {
             'Authorization': `Bearer ${getJwtToken()}`,
@@ -177,7 +177,7 @@ function readTasks() {
 
 function readCompletedTasks() {
     $.ajax({
-        url: "http://localhost:8000/tasks/completed",
+        url: "http://54.219.225.136:8000/tasks/completed",
         type: "GET",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -208,7 +208,7 @@ function updateTaskDB() {
     };
 
     $.ajax({
-        url: `http://localhost:8000/tasks/task/update?item_id=${current_task}`,
+        url: `http://54.219.225.136:8000/tasks/task/update?item_id=${current_task}`,
         type: "PUT",
         headers: {
             'Authorization': `Bearer ${getJwtToken() }`,
@@ -228,7 +228,7 @@ function updateTaskDB() {
 
 function showTaskDetails(taskId) {
     $.ajax({
-        url: `http://localhost:8000/tasks/task?item_id=${taskId}`,
+        url: `http://54.219.225.136:8000/tasks/task?item_id=${taskId}`,
         type: "GET",
         headers: {
             'Authorization': `Bearer ${getJwtToken()}`,

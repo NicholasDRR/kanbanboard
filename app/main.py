@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import router as router_tasks
 from app.api.authentication import router as router_authentication
+from app.api.routes import router as router_tasks
 from app.api.user import router as router_user
 from app.services.database import DatabaseService
 
@@ -10,14 +10,14 @@ app = FastAPI()
 
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:3001",
-    "http://localhost:3000",
-    "http://localhost:5000",
-    "http://localhost:5500",
-    "http://localhost:8080"
+    "http://54.219.225.136.tiangolo.com",
+    "https://54.219.225.136.tiangolo.com",
+    "http://54.219.225.136",
+    "http://54.219.225.136:3001",
+    "http://54.219.225.136:3000",
+    "http://54.219.225.136:5000",
+    "http://54.219.225.136:5500",
+    "http://54.219.225.136:80"
 ]
 
 app.add_middleware(
