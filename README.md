@@ -1,7 +1,7 @@
-run this app: http://54.219.225.136/login/
+# run this app: http://54.219.225.136/login/
 
-#### Desafio de Desenvolvimento Full-Stack – To-Do List
-#### Objetivo
+# Desafio de Desenvolvimento Full-Stack – To-Do List
+## Objetivo
 Desenvolver uma aplicação simples de gerenciamento de tarefas (To-Do List),
 
 utilizando Python como linguagem principal, integrando Back-end (API), Front-
@@ -10,7 +10,7 @@ end, banco de dados, e funcionalidades de segurança. O objetivo é avaliar a
 capacidade técnica em Python, assim como habilidades com tecnologias
 complementares.
 
-#### Requisitos
+## Requisitos
 
 - Back-end (Python):
 - Utilize Flask ou FastAPI para criar uma API que permita:
@@ -56,7 +56,7 @@ dados para persistência.
 feito em um repositório público no GitHub. Envie o link do repositório ao final do
 desafio.
 
-#### Avaliação
+## Avaliação
 O projeto será avaliado com base nos seguintes critérios:
 - Qualidade do código Python (organização, clareza, boas práticas de PEP8).
 - Implementação da API e das funcionalidades de gerenciamento de tarefas.
