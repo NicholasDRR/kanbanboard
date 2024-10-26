@@ -40,13 +40,13 @@ def insert_task(task: Task):
     connection, cursor = connect_to_postgres()
     
     query = """
-    INSERT INTO tasks (title, type, description, status, user_id) 
-    VALUES (%s, %s, %s, %s, %s) RETURNING id;
+    INSERT INTO tasks (title, description, status, priority, link, created_at, user_id) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
     try:
-        cursor.execute(query, (task.title, task.type, task.description, task.status, task.user_id))
-        task_id = cursor.fetchone()[0]  # Obter o ID gerado
-        connection.commit()  # Commit da transação
+        cursor.execute(query, (task.title, task.description, task.status.value, task.priority.value, task.link, task.created_at, task.user_id))
+        task_id = cursor.fetchone()[0]  # Retrieve the generated ID
+        connection.commit()  # Commit the transaction
         return task_id
     except Exception as error:
         logger.info(f"Error inserting task: {error}")
@@ -66,7 +66,7 @@ def get_task(task_id: str, user_id: str):
         cursor.execute(query, (task_id, user_id, ))
         task = cursor.fetchone()
         if task:
-            return Task(id=task[0], title=task[1], type=task[2], description=task[3], status=task[4], created_at=task[5])
+            return Task(id=task[0], user_id=task[1], title=task[2], description=task[3], status=task[4], priority=task[5], link=task[6], created_at=task[6])
         return None
     except Exception as error:
         logger.error(f"Error fetching task: {error}")
@@ -85,7 +85,7 @@ def get_all_tasks(user_id):
         cursor.execute(query, (user_id, ))
         all_tasks = cursor.fetchall()  
         for task in all_tasks:
-            tasks.append(Task(id=task[0], user_id=task[1], title=task[2], type=task[3], description=task[4], status=task[5], created_at=task[6]))
+            tasks.append(Task(id=task[0], user_id=task[1], title=task[2], description=task[3], status=task[4], priority=task[5], link=task[6], created_at=task[6]))
         return tasks 
     except Exception as error:
         logger.error(f"Error fetching tasks: {error}")

@@ -36,4 +36,4 @@ sudo docker compose up
 
  sudo docker compose up --build;
  docker-compose up -d
- docker-compose down
+ sudo docker compose down

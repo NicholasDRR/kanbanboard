@@ -16,16 +16,28 @@ def create_tables(cursor):
     CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
     """)
 
-    # Verifica se o tipo ENUM 'task_status' já existe e cria se não existir
     cursor.execute("""
     DO $$
     BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_status') THEN
             CREATE TYPE task_status AS ENUM (
-                'pending', 
-                'in_progress', 
-                'completed', 
-                'failed' 
+                'backlog', 
+                'doing', 
+                'review', 
+                'done' 
+            );
+        END IF;
+    END $$;
+    """)
+    
+    cursor.execute("""
+    DO $$
+    BEGIN
+        IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'task_priority') THEN
+            CREATE TYPE task_priority AS ENUM (
+                'low', 
+                'medium', 
+                'high'
             );
         END IF;
     END $$;
@@ -46,9 +58,10 @@ def create_tables(cursor):
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
         user_id UUID NOT NULL,
         title VARCHAR(255) NOT NULL,
-        type VARCHAR(100) NOT NULL,
         description TEXT NOT NULL,
         status task_status NOT NULL,
+        priority task_priority NOT NULL,
+        link VARCHAR(255) NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );

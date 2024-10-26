@@ -1,10 +1,10 @@
 from enum import Enum
 
 class TaskStatus(str, Enum):
-    Pendente = "pending"
-    Em_Andamento = "in_progress"
-    Concluida = "completed"
-    Falhou = "failed"
+    Backlog = "backlog"
+    Doing = "doing"
+    Review = "review"
+    Done = "done"
     
     # under_review = "Aguardando Revisão"
     # on_hold = "Em Espera"
