@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    
+    <title>Kanban Board</title>
+</head>
+<body>
+    <!-- navbar -->
+    <nav class="navbar">
+        <div class="logo_item">
+            <i class="bx bx-menu" id="sidebarOpen"></i>
+            <img src="src/images/LOGO.jfif" alt="Logo"> KanbanBoard
+        </div>
+
+        <div class="search_bar">
+            <input type="text" placeholder="Search" />
+        </div>
+
+        <div class="navbar_content">
+            <i class="bi bi-grid"></i>
+            <i class='bx bx-sun' id="darkLight"></i>
+        </div>
+    </nav>
+
+    <!-- sidebar -->
+    <nav class="sidebar">
+        <div class="menu_content">
+            <ul class="menu_items">
+                <li class="item">
+                    <div href="#" class="nav_link submenu_item">
+                        <span class="navlink_icon">
+                            <i class="bx bx-home-alt"></i>
+                        </span>
+                        <span class="navlink">Home</span>
+                        <i class="bx bx-chevron-right arrow-left"></i>
+                    </div>
+                    <ul class="menu_items submenu">
+                        <a href="#" class="nav_link sublink">Kanban Board</a>
+                        <a href="#" class="nav_link sublink">Kanban Notes</a>
+                    </ul>
+                </li>
+                <li class="item">
+                    <div href="#" class="nav_link submenu_item">
+                        <span class="navlink_icon">
+                            <i class="bx bx-grid-alt"></i>
+                        </span>
+                        <span class="navlink">Overview</span>
+                        <i class="bx bx-chevron-right arrow-left"></i>
+                    </div>
+                    <ul class="menu_items submenu">
+                        <a href="#" class="nav_link sublink">Nav Sub Link</a>
+                        <a href="#" class="nav_link sublink">Nav Sub Link</a>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="menu_items">
+                <div class="menu_title menu_setting"></div>
+                <li class="item">
+                    <a href="#" class="nav_link">
+                        <span class="navlink_icon">
+                            <i class="bx bx-cog"></i>
+                        </span>
+                        <span class="navlink">Settings</span>
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="menu_items">
+                <div class="menu_title menu_account"></div>
+                <li class="item">
+                    <a href="#" class="nav_link logout_button">
+                        <span class="navlink_icon">
+                            <i class="bx bx-log-out"></i>
+                        </span>
+                        <span class="navlink">Logout</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="bottom_content">
+                <div class="bottom expand_sidebar">
+                    <span> Expand</span>
+                    <i class='bx bx-log-in'></i>
+                </div>
+                <div class="bottom collapse_sidebar">
+                    <span> Collapse</span>
+                    <i class='bx bx-log-out'></i>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="kanban">
+        <!-- COLUMN 1 -->
+        <div class="kanban-column" data-id="1">
+            <div class="kanban-title">
+                <h2>Backlog</h2>
+                <button class="add-card" data-value="Backlog" column-value="1"> 
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+                <div class="kanban-card" draggable="true">
+                    <div class="badge medium"><span>Medium priority</span></div>
+                    <div class="kanban-manipulate-card">
+                        <p class="card-title">123</p>
+                        <p class="card-description">123</p>
+                        <p class="card-status">Status: Doing</p>
+                    </div>
+                    <div class="card-infos">
+                        <div class="card-icons">
+                            <p>
+                                <a class="icon-button" href="https://www.google.com.br/">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                </a>
+                            </p>
+                            <p>
+                                <button onclick="" class="edit-button" width="300px">
+                                    <i class="fa-solid fa-edit"></i> 
+                                </button>
+                            </p>
+                            <p>
+                                <button onclick="deleteCard()" class="icon-button" aria-label="Delete">
+                                    <i class="fa-solid fa-trash"></i> 
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2 -->
+        <div class="kanban-column" data-id="2">
+            <div class="kanban-title">
+                <h2>Doing</h2>
+                <button class="add-card" data-value="Doing" column-value="2">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+                <div class="kanban-card" draggable="true">
+                    <div class="badge high"><span>High priority</span></div>
+                    <div class="kanban-manipulate-card">
+                        <p class="card-title">123</p>
+                        <p class="card-description">123</p>
+                        <p class="card-status">Status: Doing</p>
+                    </div>
+                    <div class="card-infos">
+                        <div class="card-icons">
+                            <p>
+                                <a class="icon-button" href="https://www.google.com.br/">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                </a>
+                            </p>
+                            <p>
+                                <button onclick="" class="edit-button" width="300px">
+                                    <i class="fa-solid fa-edit"></i> 
+                                </button>
+                            </p>
+                            <p>
+                                <button onclick="deleteCard()" class="icon-button" aria-label="Delete">
+                                    <i class="fa-solid fa-trash"></i> 
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 3 -->
+        <div class="kanban-column" data-id="3">
+            <div class="kanban-title">
+                <h2>Review</h2>
+                <button class="add-card" data-value="Review" column-value="3">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+                <div class="kanban-card" draggable="true">
+                    <div class="badge low"><span>Low priority</span></div>
+                    <div class="kanban-manipulate-card">
+                        <p class="card-title">123</p>
+                        <p class="card-description">123</p>
+                        <p class="card-status">Status: Doing</p>
+                    </div>
+                    <div class="card-infos">
+                        <div class="card-icons">
+                            <p>
+                                <a class="icon-button" href="https://www.google.com.br/">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                </a>
+                            </p>
+                            <p>
+                                <button onclick="" class="edit-button" width="300px">
+                                    <i class="fa-solid fa-edit"></i> 
+                                </button>
+                            </p>
+                            <p>
+                                <button onclick="deleteCard()" class="icon-button" aria-label="Delete">
+                                    <i class="fa-solid fa-trash"></i> 
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 4 -->
+        <div class="kanban-column" data-id="4">
+            <div class="kanban-title">
+                <h2>Done</h2>
+                <button class="add-card" data-value="Done" column-value="4">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+                <div class="kanban-card" draggable="true">
+                    <div class="badge high"><span>High priority</span></div>
+                    <div class="kanban-manipulate-card">
+                        <p class="card-title">123</p>
+                        <p class="card-description">123</p>
+                        <p class="card-status">Status: Doing</p>
+                    </div>
+                    <div class="card-infos">
+                        <div class="card-icons">
+                            <p>
+                                <a class="icon-button" href="https://www.google.com.br/">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                </a>
+                            </p>
+                            <p>
+                                <button onclick="" class="edit-button" width="300px">
+                                    <i class="fa-solid fa-edit"></i> 
+                                </button>
+                            </p>
+                            <p>
+                                <button onclick="deleteCard()" class="icon-button" aria-label="Delete">
+                                    <i class="fa-solid fa-trash"></i> 
+                                </button>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="addCardModal" style="display:none;">
+            <form id="addCardForm">
+                <label for="title">Title:</label>
+                <input type="text" id="title" required />
+        
+                <label for="description">Description:</label>
+                <textarea id="description" required></textarea>
+        
+                <label for="priority">Priority:</label>
+                <select id="priority" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+        
+                <label for="link">Link:</label>
+                <input type="url" id="link" />
+        
+                <button type="submit">Add Card</button>
+                <button type="button" id="closeModal">Cancel</button>
+            </form>
+        </div>
+
+
+        <div id="editCardModal" style="display:none;">
+            <form id="editCardForm">
+                <label for="edit-title">Title:</label>
+                <input type="text" id="edit-title" required />
+        
+                <label for="edit-description">Description:</label>
+                <textarea id="edit-description" required></textarea>
+        
+                <label for="edit-priority">Priority:</label>
+                <select id="edit-priority" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+        
+                <label for="edit-link">Link:</label>
+                <input type="url" id="edit-link" />
+        
+                <button type="submit">Edit Card</button>
+                <button type="button" id="closeEditModal">Cancel</button>
+            </form>
+        </div>
+
+        <div id="viewCardModal" style="display:none;">
+            <div class="modal-content">
+                <span id="closeViewModal" style="cursor:pointer;">&times;</span>
+                <h2>Card Details</h2>
+                <p><strong>Title:</strong> <span id="view-title"></span></p>
+                <p><strong>Description:</strong> <span id="view-description"></span></p>
+                <p><strong>Priority:</strong> <span id="view-priority"></span></p>
+                <p><strong>Status:</strong> <span id="view-status"></span></p>
+                <p><strong>Link:</strong> <a id="view-link" href="" target="_blank"></a></p>
+            </div>
+        </div>
+
+
+    </main>
+    <script src="src/javascript/script.js"></script>
+    <script src="src/javascript/navbar.js"></script>
+
+</body>
+</html>

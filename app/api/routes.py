@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends
 from app.controllers.task import TaskController
 from app.models.task import Task, TaskUpdate
 from app.controllers.user import UserController
-from app.database.database import clone_postgres_to_mongodb
 
 router = APIRouter(
     prefix="/tasks",
