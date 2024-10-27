@@ -6,9 +6,7 @@ services:
     restart: always
     ports:
       - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning
-    volumes: 
-      - cache:/data
+    command: redis-server --save 60 1 --loglevel warning --maxmemory 256mb --maxmemory-policy allkeys-lru
     networks: 
       - app-network
 
@@ -18,9 +16,10 @@ services:
       - 5432:5432
     restart: always
     environment:
-      POSTGRES_PASSWORD: 123  # Set your password here
+      POSTGRES_PASSWORD: 123
     volumes: 
       - pgdata:/var/lib/postgresql/data
+      - /home/nicho/mayo-test/init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks: 
       - app-network
 
@@ -49,18 +48,6 @@ services:
     networks: 
       - app-network
 
-  app-front:
-    build:
-      context: ./frontend/
-    ports:
-      - 80:80
-    depends_on:
-      - app
-    networks: 
-      - app-network
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-
 networks: 
   app-network:
     driver: bridge
@@ -68,6 +55,4 @@ networks:
 volumes:
   pgdata:
   cache:
-    driver: local
   mongodata:
-    driver: local

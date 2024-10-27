@@ -28,12 +28,24 @@ sudo docker run --name my-postgres2 -e POSTGRES_PASSWORD=123 -d -p 5432:5432 -v 
 redis server
 sudo apt-get install redis-server
 sudo service redis-server start
+sudo service redis-server stop
 
 
 run dockercompose 
 sudo docker compose up
 
 
- sudo docker compose up --build;
- docker-compose up -d
- sudo docker compose down
+sudo docker compose up --build;
+docker-compose up -d
+sudo docker compose down
+
+
+sudo docker exec -it f38aa104c4a4 bash
+
+sudo docker compose down --volumes
+
+sudo docker container ls -qa
+
+sudo docker volume ls
+
+sudo docker compose up --renew-anon-volumes --build

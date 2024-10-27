@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from app.controllers.task import TaskController
 from app.models.task import Task, TaskUpdate
 from app.controllers.user import UserController
-from app.config.logging import logger
+from app.database.database import clone_postgres_to_mongodb
 
 router = APIRouter(
     prefix="/tasks",
@@ -21,10 +21,10 @@ def read_tasks(current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
     return task_controller.read_tasks(user_id)
 
-@router.get("/completed", dependencies=[Depends(get_current_user)])
-def read_completed_tasks(current_user: dict = Depends(get_current_user)):
+@router.get("/deleted", dependencies=[Depends(get_current_user)])
+def read_deleted_tasks(current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
-    return task_controller.read_completed_tasks(user_id)
+    return task_controller.read_deleted_tasks(user_id)
 
 @router.get("/task/", dependencies=[Depends(get_current_user)])
 def read_task(item_id: str, current_user: dict = Depends(get_current_user)):
@@ -40,6 +40,11 @@ def post_task(task: Task, current_user: dict = Depends(get_current_user)):
 def update_task(item_id: str, task: TaskUpdate, current_user: dict = Depends(get_current_user)):
     task.user_id = current_user['sub']
     return task_controller.modify_task(item_id, task)
+
+@router.put("/task/activate", dependencies=[Depends(get_current_user)])
+def activate_task(item_id: str, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return task_controller.activate_task(item_id, user_id)
 
 @router.delete("/task/delete", dependencies=[Depends(get_current_user)])
 def delete_task(item_id: str, current_user: dict = Depends(get_current_user)):
