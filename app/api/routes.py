@@ -32,6 +32,7 @@ def read_task(item_id: str, current_user: dict = Depends(get_current_user)):
 
 @router.post("/task/post", dependencies=[Depends(get_current_user)])
 def post_task(task: Task, current_user: dict = Depends(get_current_user)):
+    print(task)
     task.user_id = current_user['sub']
     return task_controller.create_task(task)
 

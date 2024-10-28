@@ -45,6 +45,7 @@ def get_task(task_id: str, user_id: str):
     try:
         cursor.execute(query, (task_id, user_id,))
         task = cursor.fetchone()
+        
         if task:
             return Task(
                 id=task[0],
@@ -58,7 +59,7 @@ def get_task(task_id: str, user_id: str):
                 updated_at=task[8],
                 active=True  
             )
-        return None
+        return task
     except Exception as error:
         logger.error(f"Error fetching task: {error}")
         return None
@@ -68,6 +69,7 @@ def get_task(task_id: str, user_id: str):
 
 
 def get_all_tasks(user_id):
+    
     connection, cursor = connect_to_postgres()
     query = "SELECT * FROM tasks WHERE user_id = %s AND active = TRUE;"
     tasks = [] 
@@ -129,28 +131,43 @@ def get_all_deleted_tasks(user_id):
         cursor.close()
         connection.close()
 
+
 def update_task(task_id: str, task: TaskUpdate):
     connection, cursor = connect_to_postgres()
     
-    query = """
-    UPDATE tasks 
-    SET title = %s, description = %s, status = %s, priority = %s, link = %s, updated_at = %s
-    WHERE id = %s and user_id = %s;
-    """
+    fields_to_update = []
+    values = []
+    
+    if task.title is not None:
+        fields_to_update.append("title = %s")
+        values.append(task.title)
+    if task.description is not None:
+        fields_to_update.append("description = %s")
+        values.append(task.description)
+    if task.status is not None:
+        fields_to_update.append("status = %s")
+        values.append(task.status)
+    if task.priority is not None:
+        fields_to_update.append("priority = %s")
+        values.append(task.priority)
+    if task.link is not None:
+        fields_to_update.append("link = %s")
+        values.append(task.link)
+    if task.updated_at is not None:
+        fields_to_update.append("updated_at = %s")
+        values.append(task.updated_at)
+    
+    if not fields_to_update:
+        logger.warning("No fields provided for update")
+        return None
+    
+    # Add the WHERE clause for task_id and user_id
+    query = f"UPDATE tasks SET {', '.join(fields_to_update)} WHERE id = %s AND user_id = %s"
+    values.extend([task_id, task.user_id])
     
     try:
-        # Adding `task.updated_at` and `task_id` to match placeholders in the query
-        cursor.execute(query, (
-            task.title, 
-            task.description, 
-            task.status, 
-            task.priority, 
-            task.link, 
-            task.updated_at, 
-            task_id,          
-            task.user_id
-        ))
-        connection.commit()  
+        cursor.execute(query, tuple(values))
+        connection.commit()
         return task_id
     except Exception as error:
         logger.error(f"Error updating task: {error}")
@@ -159,6 +176,7 @@ def update_task(task_id: str, task: TaskUpdate):
     finally:
         cursor.close()
         connection.close()
+        
 
 def activate_task(task_id: str, user_id: str):
     connection, cursor = connect_to_postgres()

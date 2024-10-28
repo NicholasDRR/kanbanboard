@@ -15,6 +15,10 @@ body {
 
 }
 
+.badge.refresh {
+  background-color: rgba(255, 255, 255, 0.8); /* Altera a cor para um efeito visual */
+  opacity: 0.5; /* Diminui a opacidade temporariamente */
+}
 
 /* Modo escuro */z
 body.dark {
