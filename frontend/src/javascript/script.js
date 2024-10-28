@@ -347,15 +347,6 @@ document.querySelectorAll('.kanban-card').forEach(card => {
 });
 
 
-document.querySelectorAll('.kanban-manipulate-card').forEach(card => {
-    card.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent click event from bubbling up if needed
-        const kanbanCard = card.closest('.kanban-card'); // Get the closest parent kanban-card
-        openViewModal(kanbanCard); // Pass the whole kanban card to the modal
-    });
-});
-
-
 // Seleciona todos os elementos com a classe '.kanban-cards' (as colunas) e adiciona eventos a cada um deles
 document.querySelectorAll('.kanban-cards').forEach(column => {
     // Evento disparado quando um card arrastado passa sobre uma coluna (drag over)
@@ -383,20 +374,40 @@ document.querySelectorAll('.kanban-cards').forEach(column => {
 });
 
 
-// Open the view modal and fill it with the current card details
-function openViewModal(card) {
-    // Populate the view modal with card details
-    document.getElementById("view-title").textContent = card.querySelector(".card-title").textContent;
-    document.getElementById("view-description").textContent = card.querySelector(".card-description").textContent;
-    document.getElementById("view-priority").textContent = toTitleCase(card.querySelector(".badge").classList[1]); // Assuming the second class is the priority
-    document.getElementById("view-status").textContent = card.querySelector(".card-status").textContent;
-    document.getElementById("view-link").href = card.querySelector("a").href || "";
-    document.getElementById("view-link").textContent = card.querySelector("a").href ? "View Link" : "";
 
-    document.getElementById("viewCardModal").style.display = "block";
+async function openViewModal(cardId) {
+    try {
+        const cardData = await readSpecificTask(cardId);
+
+        document.getElementById("view-title").textContent = toTitleCase(cardData.title);
+        document.getElementById("view-description").textContent = toTitleCase(cardData.description);
+        document.getElementById("view-priority").textContent = toTitleCase(cardData.priority); 
+        document.getElementById("view-status").textContent = toTitleCase(cardData.status);
+        
+        // Log do link
+        console.log("Link:", cardData.link);
+
+        const linkElement = document.getElementById("view-link");
+        const linkContainer = document.getElementById("link-container");
+
+        if (cardData.link && cardData.link !== "#") {
+            linkElement.href = cardData.link;
+            linkElement.textContent = "View Link"; 
+            linkContainer.style.display = "block"; // Mostra o contêiner do link
+            console.log("Link válido, mostrando:", cardData.link);
+        } else {
+            linkContainer.style.display = "none"; // Esconde o contêiner do link
+            console.log("Link inválido, escondendo.");
+        }
+
+        document.getElementById("viewCardModal").style.display = "block";
+        document.getElementById("viewCardModal").setAttribute("aria-hidden", "false"); 
+    } catch (error) {
+        console.error("Error opening view modal:", error);
+    }
 }
 
-// Close view modal
+
 document.getElementById("closeViewModal").addEventListener("click", function () {
     document.getElementById("viewCardModal").style.display = "none";
 });
@@ -471,13 +482,12 @@ function addKanbanCard(kanbanColumnId, item_id, title, description, status, prio
     const editButton = document.createElement("p");
     const editAnchor = document.createElement("button");
     editAnchor.classList.add("edit-button");
-    editAnchor.onclick = () => { /* Add your edit function here */ };
     const editIcon = document.createElement("i");
     editIcon.classList.add("fa-solid", "fa-edit");
     editAnchor.appendChild(editIcon);
     editButton.appendChild(editAnchor);
     cardIcons.appendChild(editButton);
-    editAnchor.onclick = () => openEditModal(item_id);
+    editAnchor.onclick = (event) => {event.stopPropagation(); openEditModal(item_id);};
 
     // Create delete button
     const deleteButton = document.createElement("p");
@@ -505,9 +515,26 @@ function addKanbanCard(kanbanColumnId, item_id, title, description, status, prio
     kanbanCard.addEventListener('dragend', e => {
         e.currentTarget.classList.remove('dragging');
     });
+
+    kanbanCard.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openViewModal(item_id)
+    });
+
     kanbanCards.appendChild(kanbanCard);
 
 }
+
+
+
+
+
+
+
+
+
+
+
 
 
 function deleteCard(item_id) {

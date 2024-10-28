@@ -15,9 +15,21 @@ body {
 
 }
 
-.badge.refresh {
-  background-color: rgba(255, 255, 255, 0.8); /* Altera a cor para um efeito visual */
-  opacity: 0.5; /* Diminui a opacidade temporariamente */
+:root {
+  --white-color: #fff;
+  --blue-color: #4070f4;
+  --grey-color: #707070;
+  --grey-color-light: #aaa;
+}
+
+
+.kanban-manipulate-card {
+  transition: color 0.3s ease; /* Suaviza a transição da cor do texto */
+}
+
+.kanban-manipulate-card:hover .card-title {
+  cursor: pointer; /* Indica que é clicável */
+  color: #4070f4;/* Altere para a cor desejada */
 }
 
 /* Modo escuro */z
@@ -85,6 +97,7 @@ body.dark .edit-button {
     height: 100%;
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
+    
 }
 
 .modal-content {
@@ -92,7 +105,12 @@ body.dark .edit-button {
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Adjust the width as needed */
+    width: 80%; 
+    border-radius: 30px;
+}
+
+.modal-content p {
+  margin-top: 10px; /* Espaçamento entre os parágrafos */
 }
 
 
@@ -383,12 +401,7 @@ body.dark .edit-button {
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
-:root {
-  --white-color: #fff;
-  --blue-color: #4070f4;
-  --grey-color: #707070;
-  --grey-color-light: #aaa;
-}
+
 body {
   background-color: #e7f2fd;
   transition: all 0.5s ease;

@@ -29,7 +29,7 @@ redis server
 sudo apt-get install redis-server
 sudo service redis-server start
 sudo service redis-server stop
-
+sudo service mongod stop
 
 run dockercompose 
 sudo docker compose up
