@@ -107,7 +107,11 @@ body.dark .edit-button {
     border: 1px solid #888;
     width: 80%; 
     border-radius: 30px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra */
+    transform: translateY(-50px); /* Move o modal para cima */
+    transition: transform 0.5s ease; /* Suavização do movimento */
 }
+
 
 .modal-content p {
   margin-top: 10px; /* Espaçamento entre os parágrafos */
@@ -198,6 +202,8 @@ body.dark .edit-button {
     background-color: #5a6268;
 }
 
+
+
 /* Modal overlay */
 .modal-overlay {
     position: fixed;
@@ -223,11 +229,23 @@ body.dark .edit-button {
   overflow-x: auto;
   margin: 0; /* remove a margem fixa */
   margin-left: 260px; 
+  margin-top: 40px; 
+  overflow: hidden;
+  opacity: 1;
+  max-height: 1000px;
+  visibility: visible; /* Exibe o elemento */
+  transition: height 0.3s ease; 
+  position: static;
 }
 
-.kanban {
-  margin-top: 40px; /* ajuste conforme necessário para o espaçamento */
-}
+.kanban.hidden {
+  opacity: 0; /* Oculta o elemento */
+  height: 0; /* Define a altura para 0 */
+  overflow: hidden; /* Impede o conteúdo de transbordar */
+  transition: opacity 0.3s ease, height 0.3s ease; /* Transição suave */
+  position:absolute;
+} 
+
 
 .kanban-column {
   flex-grow: 1; /* permite que as colunas cresçam */
@@ -443,11 +461,13 @@ body.dark {
   height: 35px;
   object-fit: cover;
   border-radius: 50%;
+  
 }
 .search_bar {
   height: 47px;
-  max-width: 430px;
+  max-width: 700px;
   width: 100%;
+  margin-right: 10%; 
 }
 .search_bar input {
   height: 100%;

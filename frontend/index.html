@@ -40,7 +40,7 @@
                         <i class="bx bx-chevron-right arrow-left"></i>
                     </div>
                     <ul class="menu_items submenu">
-                        <a href="#" class="nav_link sublink">Kanban Board</a>
+                        <a class="nav_link sublink" id="kanbanBoardButton">Kanban Board</a>
                         <a href="#" class="nav_link sublink">Kanban Notes</a>
                     </ul>
                 </li>
@@ -61,26 +61,19 @@
 
             <ul class="menu_items">
                 <div class="menu_title menu_setting"></div>
-                <li class="item">
-                    <a href="#" class="nav_link">
-                        <span class="navlink_icon">
-                            <i class="bx bx-cog"></i>
-                        </span>
-                        <span class="navlink">Settings</span>
-                    </a>
-                </li>
-            </ul>
-
-            <ul class="menu_items">
-                <div class="menu_title menu_account"></div>
-                <li class="item">
-                    <a href="#" class="nav_link logout_button">
-                        <span class="navlink_icon">
-                            <i class="bx bx-log-out"></i>
-                        </span>
-                        <span class="navlink">Logout</span>
-                    </a>
-                </li>
+    
+                <div class="nav_link submenu_item">
+                    <span class="navlink_icon">
+                        <i class="bx bx-cog"></i>
+                    </span>
+                    <span class="navlink">Settings</span>
+                    <i class="bx bx-chevron-right arrow-left"></i>
+                </div>
+                
+                <ul class="menu_items submenu">
+                    <a class="nav_link sublink" id="settingsButton" >Password</a>
+                </ul>
+                
             </ul>
 
             <div class="bottom_content">
@@ -197,6 +190,8 @@
             </div>
         </div>
     </main>
+
+    <div id="settingsPage" style="display:none;"></div>
 
     <script src="src/javascript/script.js"></script>
     <script src="src/javascript/navbar.js"></script>

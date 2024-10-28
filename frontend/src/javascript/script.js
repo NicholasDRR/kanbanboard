@@ -44,6 +44,22 @@ function getCardById(cardId) {
 
 
 $(document).ready(function() {
+    $('#settingsButton').click(function(e) {
+        e.preventDefault(); 
+        
+        // Use a class to hide the kanban board
+        $('.kanban').addClass('hidden')
+        $('#settingsPage').load('src/settings/dist/index.html', function() {
+            $('#settingsPage').show();
+        });
+    });
+
+    $('#kanbanBoardButton').click(function(e) {
+        e.preventDefault(); 
+        $('#settingsPage').hide();
+        $('.kanban').removeClass('hidden')
+    }); // Fixed missing closing parenthesis
+
     readTasks().then(function(tasks) {
         globalAllTasksData = tasks;
         insertBackLogCards();
@@ -54,6 +70,11 @@ $(document).ready(function() {
         console.error("Failed to read tasks:", error);
     });
 });
+
+
+
+
+
 
 
 function insertBackLogCards() {
