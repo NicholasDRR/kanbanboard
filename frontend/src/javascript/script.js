@@ -49,7 +49,7 @@ $(document).ready(function() {
         
         // Use a class to hide the kanban board
         $('.kanban').addClass('hidden')
-        $('#settingsPage').load('src/settings/dist/index.html', function() {
+        $('#settingsPage').load('src/components/password/index.html', function() {
             $('#settingsPage').show();
         });
     });
