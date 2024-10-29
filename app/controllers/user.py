@@ -1,5 +1,4 @@
 from fastapi import HTTPException, Depends, status
-from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt, JWTError
 from passlib.context import CryptContext
@@ -41,7 +40,7 @@ class UserController:
         if not user_created:
             raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail={'msg': 'Invalid data'})
 
-        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content={"msg": "Successfully created"})
+        return True
     
     def update_user(self, old_password, new_password, user_id):
         user_data = self.read_user(user_id)
@@ -55,7 +54,7 @@ class UserController:
         if not user_updated:
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={'msg': 'Unknow ERROR'})
         
-        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content={"msg": "Successfully updated"})
+        return True
     
     def delete_user(self, user_id: int):
         return delete_user(user_id)
