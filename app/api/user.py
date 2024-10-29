@@ -1,6 +1,7 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.controllers.user import UserController
-from app.models.user import User, UserUpdate
+from app.models.user import User
+from app.api.routes import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -27,8 +28,9 @@ def post_user(user: User):
 
 
 @router.put("/user/update")
-def update_user(user_id: str, user: UserUpdate):
-    return user_controller.update_user(user_id, user.email, user.password)
+def update_user(old_password:str, new_password: str, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return user_controller.update_user(old_password, new_password, user_id)
 
 
 # @router.delete("/user/delete")
