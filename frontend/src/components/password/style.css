@@ -113,33 +113,22 @@ body {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-h1 {
+#box #passwordTitle {
   margin-bottom: 30px;
   font-size: 70px;
   color: #e0e0e0;
   font-weight: 600;
   
 }
- h1 span, small {
+#box #passwordTitle span, small {
   display:block;
   font-size: 30px;
   color: #e0e0e0;
   font-weight: 200;
  }
-small{ font-style: italic; 
+#box small{ font-style: italic; 
   font-size: 11px;}
-form p { position: relative; }
+#box form p { position: relative; }
 
 .password {
   width: 90%;

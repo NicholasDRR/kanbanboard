@@ -41,7 +41,7 @@
                     </div>
                     <ul class="menu_items submenu">
                         <a class="nav_link sublink" id="kanbanBoardButton">Kanban Board</a>
-                        <a href="#" class="nav_link sublink">Dead Kanban Board</a>
+                        <a class="nav_link sublink" id="kanbanRecycleBoardButton">Recycle Board</a>
                     </ul>
                 </li>
                 <li class="item">
@@ -88,8 +88,10 @@
             </div>
         </div>
     </nav>
-
     <main class="kanban">
+        <div id="boardTitle">
+            <h1></h1>
+        </div>
         <!-- COLUMN 1 -->
         <div class="kanban-column" data-id="1">
             <div class="kanban-title">
@@ -186,13 +188,37 @@
                 <p><strong>Priority:</strong> <span id="view-priority"></span></p>
                 <p><strong>Status:</strong> <span id="view-status"></span></p>
                 <p id="link-container" style="display:none;"><strong>Link:</strong> <a id="view-link" href="" target="_blank"></a></p>
+                <p id="created-container" style="display:none;"><strong>Created at: </strong><span id="view-created"></span></p>
+                <p id="updated-container" style="display:none;"><strong>Updated at: </strong><span id="view-updated"></span></p>
+                <p id="deleted-container" style="display:none;"><strong>Deleted at: </strong><span id="view-deleted"></span></p>
             </div>
         </div>
+        
+        <!-- <div id="successModal" style="display: none;">
+            <div class="password-modal-content">
+                <span id="closeSuccessModal" style="cursor:pointer;">&times;</span>
+                <h2>Success: Password Changed</h2>
+                <p><strong>We were unable to change your password. Your password has been successfully changed. You can now use your new password to log in.
+                <br>If you did not initiate this change, please contact support immediately.</strong></p>
+                <p><img src="src/images/success.png" alt=""></p>
+            </div>
+        </div> -->
+        <div id="noticeModal" style="display: none;">
+            <div class="notice-modal-content">
+                <span id="closeNoticeModal" style="cursor:pointer;">&times;</span>
+                <h2>Notice: Kanban Board is Empty</h2>
+                <p><strong>Your Kanban board is currently empty, which is why you are seeing this message. 
+                <br>To create a task, simply click the "+" button, and this message will disappear.</strong></p>
+                <p><img src="src/images/error2.png" alt=""></p>
+            </div>
+        </div>
+
     </main>
 
     <div id="settingsPage" style="display:none;"></div>
     
     <script src="src/javascript/script.js"></script>
-    <script src="src/javascript/navbar.js"></script>    
+    <script src="src/javascript/navbar.js"></script
+        >    
 </body>
 </html>

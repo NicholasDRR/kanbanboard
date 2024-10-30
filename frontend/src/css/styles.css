@@ -92,6 +92,59 @@ body.dark .edit-button {
 }
 
 
+#noticeModal{
+  display: none; /* Hide modal by default */
+  position: fixed; /* Stay in place */
+  z-index: 10000; /* Higher z-index to appear on top */
+  left: 0;
+  top: 0; /* Align to the top */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  display: flex; /* Added for flex centering */
+}
+
+.notice-modal-content {
+  display: flex; /* Use flexbox for centering */
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center horizontally */
+  justify-content: center; /* Center vertically */
+  background-color: #fff; /* White background */
+  margin: auto; /* Auto margin */
+  padding: 20px; /* Padding */
+  border: 1px solid #888; /* Border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow */
+  max-width: 600px; /* Maximum width */
+  width: 90%; /* Width responsive */
+}
+
+.notice-modal-content img {
+  max-width: 100%; /* Responsive image */
+  height: auto; /* Maintain aspect ratio */
+  margin: 20px 0; /* Space around the image */
+}
+
+#closeNoticeModal {
+  color: #aaa; /* Close button color */
+  float: right; /* Position to the right */
+  font-size: 28px; /* Font size */
+  font-weight: bold; /* Bold */
+}
+
+#closeNoticeModal:hover,
+#closeNoticeModal:focus{
+  color: black; /* Change color on hover */
+  text-decoration: none; /* Remove underline */
+  cursor: pointer; /* Pointer cursor */
+}
+
+
+
+
 
 #viewCardModal {
     display: none;
@@ -226,17 +279,18 @@ body.dark .edit-button {
   height: 60px; /* ajuste conforme a altura real da sua navbar */
 }
 
+
+
 .kanban {
   display: flex;
   flex-wrap: nowrap;
   gap: 14px;
   padding: 24px;
   width: 100%; /* ocupa 100% da largura da tela */
-  height: calc(100vh - 60px); /* ajuste para ocupar toda a altura da tela menos a altura da navbar */
+  height: calc(100vh - 120px); /* ajuste para ocupar toda a altura da tela menos a altura da navbar */
   overflow-x: auto;
-  margin: 0; /* remove a margem fixa */
   margin-left: 260px; 
-  margin-top: 40px; 
+  margin-top: 120px; 
   overflow: hidden;
   opacity: 1;
   max-height: 1000px;
@@ -245,12 +299,60 @@ body.dark .edit-button {
   position: static;
 }
 
+.kanban #boardTitle {
+  position: absolute;
+  top: 10px; /* Ajuste conforme necessário */
+  left: 10px; /* Ajuste conforme necessário */
+  z-index: 10; /* Garante que fique acima das colunas */
+  padding: 20px; /* Espaço interno para aumentar o tamanho */
+  width: 200px; /* Largura fixa */
+  height: 100px; /* Altura fixa */
+  text-align: center; /* Centraliza o texto */
+  margin-left: 255px; 
+  margin-top: 50px; 
+  color: #e0e0e0;;
+  
+}
+
+@keyframes moveRight {
+  0% {
+    transform: translateX(0) rotate(0deg) scale(1);
+    opacity: 0; /* Começa invisível */
+    text-shadow: none; /* Sem sombra de texto */
+    color: #e0e0e0; /* Cor inicial */
+  }
+  30% {
+    transform: translateX(20px) rotate(5deg) scale(1.1);
+    opacity: 1; /* Fica visível rapidamente */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombra de texto */
+    color: #f0f0f0; /* Muda a cor */
+  }
+  60% {
+    transform: translateX(40px) rotate(-5deg) scale(1);
+  }
+  100% {
+    transform: translateX(0) rotate(0deg) scale(1);
+    opacity: 1; /* Fica visível na posição final */
+    text-shadow: none; /* Remove a sombra */
+    color: #e0e0e0; /* Retorna à cor original */
+  }
+}
+
+.animate {
+  animation: moveRight 1s ease; /* 1 segundo de duração */
+}
+
+
+
+
+
 .kanban.hidden {
   opacity: 0; /* Oculta o elemento */
   height: 0; /* Define a altura para 0 */
   overflow: hidden; /* Impede o conteúdo de transbordar */
   transition: opacity 0.3s ease, height 0.3s ease; /* Transição suave */
   position:absolute;
+  margin-top: 120px; 
 } 
 
 

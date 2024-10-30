@@ -2,7 +2,8 @@ let globalAllTasksData;
 let globalButtonValue;
 let globalColumnValue;
 let currentEditingCard;
-let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiNWZhMmJjNS1iOTNkLTRmZGMtYmFkYy0wYTIxMDYxYzkyZGYiLCJleHAiOjE3MzI2NjE2MjZ9.Q_u_9TH5NM2m_nyV4IQ0_lDQV7bYhUom_huc1NoU27E';
+let globalBoard;
+let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmJkMjA0NS01NWNmLTQ5MGEtOTdjYS1kMDg2MTllMGEzYjUiLCJleHAiOjE3MzI5MTEwMjR9.Yr2yZKef0MJ7x-8DtSoXs7CLpQygs6EphFkQFTvdbr8';
 let ambient = 'localhost'
 const addCardButtons = document.querySelectorAll(".add-card");
 const kanbanCards = document.querySelectorAll('.kanban-card');
@@ -18,9 +19,6 @@ function checkAuth() {
         window.location.href = "http://54.219.225.136:80/login"; 
     }
 }
-
-
-
 function toTitleCase(str) {
     return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
@@ -28,11 +26,28 @@ function toLowerCase(str) {
     return str.toLowerCase();
 }
 
+function titleAnimation()
+{
+    const titleElement = document.querySelector('#boardTitle h1');
+    titleElement.classList.remove("animate");
+    void titleElement.offsetWidth;
+    titleElement.classList.add("animate");
+}
+
+function formatDateToBrazilian(dateString) {
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
 
 function getCardById(cardId) {
     const card = document.getElementById(cardId);
     if (card) {
-        // O card foi encontrado, você pode realizar as ações necessárias
         console.log("Card encontrado:", card);
         return card;
     } else {
@@ -44,44 +59,122 @@ function getCardById(cardId) {
 
 
 $(document).ready(function() {
-    $('#settingsButton').click(function(e) {
-        e.preventDefault(); 
+
+    function closeModal(modalId) {
+        $(`#${modalId}`).css('display', 'none'); 
+    }
+
+
+    $(window).on('click', function(event) {
+        if ($(event.target).is('#noticeModal')) {
+            closeModal('noticeModal');
+        }
         
-        // Use a class to hide the kanban board
-        $('.kanban').addClass('hidden')
-        $('#settingsPage').load('src/components/password/index.html', function() {
-            $('#settingsPage').show();
+    });
+    $(document).on('click', '#settingsButton', function(e) {
+        e.preventDefault();
+        
+        $('.kanban').addClass('hidden');
+        
+        $.ajax({
+            url: 'src/components/password/index.html',
+            type: 'GET',
+            success: function(data) {
+                $('#settingsPage').html(data).show();
+                $('#myform-search')[0].reset(); 
+                $('.search_bar').hide();
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.error("Failed to load settings page:", textStatus, errorThrown);
+            }
         });
     });
 
+
+
     $('#kanbanBoardButton').click(function(e) {
         e.preventDefault(); 
+
+        globalBoard = 'default'
+        document.querySelector('#boardTitle h1').innerText = 'KanbanBoard';
+        titleAnimation()
+
+
+        const buttons = document.getElementsByClassName('add-card');
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].style.display = 'block';
+        }
+
+
+        $('.kanban .kanban-cards').empty(); 
         $('#settingsPage').hide();
+        $('.search_bar').show();
         $('.kanban').removeClass('hidden')
-    }); // Fixed missing closing parenthesis
+        
+        readTasks().then(function(response) {
+            const tasks = response.tasks;
+            const status = response.status;
+            globalAllTasksData = tasks;        
+            insertBackLogCards();
+            insertDoingCards();
+            insertReviewCards();
+            insertDoneCards();
+        }).catch(function(error) {
+            console.error("Failed to read tasks:", error);
+            if (error.status === 404) { 
+                $('#noticeModal').css('display', 'flex');
+            }
+        });
+    }); 
 
-    readTasks().then(function(tasks) {
-        globalAllTasksData = tasks;
-        insertBackLogCards();
-        insertDoingCards();
-        insertReviewCards();
-        insertDoneCards();
-    }).catch(function(error) {
-        console.error("Failed to read tasks:", error);
-    });
+    $('#kanbanRecycleBoardButton').click(function(e) {
+        e.preventDefault(); 
+
+        globalBoard = 'recycle'
+        document.querySelector('#boardTitle h1').innerText = 'RecycleBoard';
+        titleAnimation()
+
+        $('.kanban .kanban-cards').empty(); 
+        $('#settingsPage').hide();
+        $('.search_bar').show();
+
+        const buttons = document.getElementsByClassName('add-card');
+
+        for (let i = 0; i < buttons.length; i++) {
+            buttons[i].style.display = 'none'; // Torna o botão invisível
+        }
+
+        $('.kanban').removeClass('hidden')
+        
+        readDeletedTasks().then(function(tasks) {
+            globalAllTasksData = tasks;
+            insertBackLogCards();
+            insertDoingCards();
+            insertReviewCards();
+            insertDoneCards();
+        }).catch(function(error) {
+            console.error("Failed to read tasks:", error);
+        });
+    }); 
+
 });
-
-
-
-
-
 
 
 function insertBackLogCards() {
     if (Array.isArray(globalAllTasksData)) {
         globalAllTasksData.forEach(function(task) {
             if (task.status == "backlog") {
-                addKanbanCard(1, task.id, task.title, task.description, task.status, task.priority, task.link);
+
+                if (globalBoard == 'recycle')
+                {
+                    addRecycleKanbanCard(1, task.id, task.title, task.description, task.status, task.priority, task.link);
+                }
+                
+                if (globalBoard == 'default')
+                {
+                    addKanbanCard(1, task.id, task.title, task.description, task.status, task.priority, task.link);
+                }
+                
             }
         });
     } else {
@@ -93,7 +186,15 @@ function insertDoingCards() {
     if (Array.isArray(globalAllTasksData)) {
         globalAllTasksData.forEach(function(task) {
             if (task.status == "doing") {
-                addKanbanCard(2, task.id, task.title, task.description, task.status, task.priority, task.link);
+                if (globalBoard == 'recycle')
+                {
+                    addRecycleKanbanCard(2, task.id, task.title, task.description, task.status, task.priority, task.link);
+                }
+                    
+                if (globalBoard == 'default')
+                {
+                    addKanbanCard(2, task.id, task.title, task.description, task.status, task.priority, task.link);
+                }
             }
         });
     } else {
@@ -105,7 +206,15 @@ function insertReviewCards() {
     if (Array.isArray(globalAllTasksData)) {
         globalAllTasksData.forEach(function(task) {
             if (task.status == "review") {
-                addKanbanCard(3, task.id, task.title, task.description, task.status, task.priority, task.link);
+                if (globalBoard == 'recycle')
+                {
+                    addRecycleKanbanCard(3, task.id, task.title, task.description, task.status, task.priority, task.link);
+                }
+                    
+                if (globalBoard == 'default')
+                {
+                    addKanbanCard(3, task.id, task.title, task.description, task.status, task.priority, task.link);
+                }
             }
         });
     } else {
@@ -117,7 +226,14 @@ function insertDoneCards() {
     if (Array.isArray(globalAllTasksData)) {
         globalAllTasksData.forEach(function(task) {
             if (task.status == "done") {
-                addKanbanCard(4, task.id, task.title, task.description, task.status, task.priority, task.link);
+                if (globalBoard == 'recycle')
+                {
+                    addRecycleKanbanCard(4, task.id, task.title, task.description, task.status, task.priority, task.link);
+                } 
+                if (globalBoard == 'default')
+                {
+                    addKanbanCard(4, task.id, task.title, task.description, task.status, task.priority, task.link);
+                }
             }
         });
     } else {
@@ -128,17 +244,33 @@ function insertDoneCards() {
 
 function fullDeleteCards(item_id) {
     try {
-        deleteTask(item_id);
-        deleteCard(item_id);
+        if (globalBoard == 'recycle')
+            {
+                fullDeleteTask(item_id);
+                deleteCard(item_id);
+            } 
+        if (globalBoard == 'default')
+        {
+            deleteTask(item_id);
+            deleteCard(item_id);
+        }
+        
         console.log(`Item ${item_id} deletado com sucesso.`);
     } catch (error) {
         console.error(`Erro ao deletar a tarefa do item ${item_id}:`, error);
     }
 }
 
-
-
-
+function restoreCard(item_id) {
+    try{
+        activeTask(item_id)
+        deleteCard(item_id)
+        console.log(`Item ${item_id} reativado com sucesso.`);
+    } catch (error) {
+        console.error(`Erro ao restaurar a tarefa do item ${item_id}:`, error);
+    }
+    
+}
 
 
 function readTasks() {
@@ -150,12 +282,18 @@ function readTasks() {
             'Authorization': `Bearer ${jwtToken}`,
             'Accept': 'application/json'
         }
+    }).then(function(tasks, textStatus, jqXHR) {
+        // Return an object containing the tasks and the status
+        return {
+            tasks: tasks,
+            status: jqXHR.status // Capture the HTTP status code
+        };
     });
 }
 
 
 function readDeletedTasks() {
-    $.ajax({
+    return $.ajax({
         url: `http://${ambient}:8000/tasks/deleted`,
         crossDomain: true,
         type: "GET",
@@ -233,8 +371,24 @@ function deleteTask(taskId) {
     });
 }
 
-
-
+function fullDeleteTask(taskId) {
+    $.ajax({
+        url: `http://${ambient}:8000/tasks/task/full_delete?item_id=${taskId}`,
+        crossDomain: true,
+        type: "DELETE",
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        success: function(response) {
+            console.log("Task full deleted successfully:", response);
+        },
+        error: function(xhr, status, error) {
+            console.error("Error deleting task:", error);
+        }
+    });
+}
 
 
 document.getElementById("addCardForm").addEventListener("submit", async function (e) {
@@ -306,13 +460,7 @@ function saveTask(taskName, taskDescription, taskPriority, taskStatus, taskLink)
 
 
 function updateTask(taskData) {
-
-
-    console.log(JSON.stringify(taskData))
-
     let updateURl;
-
-
     if(taskData.item_id)
     {
         updateURl = `http://${ambient}:8000/tasks/task/update?item_id=${taskData.item_id}`;
@@ -405,8 +553,6 @@ async function openViewModal(cardId) {
         document.getElementById("view-priority").textContent = toTitleCase(cardData.priority); 
         document.getElementById("view-status").textContent = toTitleCase(cardData.status);
         
-        // Log do link
-        console.log("Link:", cardData.link);
 
         const linkElement = document.getElementById("view-link");
         const linkContainer = document.getElementById("link-container");
@@ -421,6 +567,39 @@ async function openViewModal(cardId) {
             console.log("Link inválido, escondendo.");
         }
 
+        const updatedElement = document.getElementById("view-updated");
+        const updatedContainer = document.getElementById("updated-container");
+
+        if (cardData.updated_at) {
+            updatedElement.textContent = formatDateToBrazilian(cardData.updated_at);
+            updatedContainer.style.display = "block";
+        } else {
+            updatedContainer.style.display = "none"; 
+        }
+
+        const createdElement = document.getElementById("view-created");
+        const createdContainer = document.getElementById("created-container");
+
+        if (cardData.created_at) {
+            createdElement.textContent = formatDateToBrazilian(cardData.created_at);
+            createdContainer.style.display = "block";
+        } else {
+            createdContainer.style.display = "none"; 
+        }
+
+        const deletedElement = document.getElementById("view-deleted");
+        const deletedContainer = document.getElementById("deleted-container");
+
+
+        console.log(cardData.deleted_at)
+        console.log(cardData.id)
+        if (cardData.deleted_at) {
+            deletedElement.textContent = formatDateToBrazilian(cardData.deleted_at);
+            deletedContainer.style.display = "block";
+        } else {
+            deletedContainer.style.display = "none"; 
+        }
+
         document.getElementById("viewCardModal").style.display = "block";
         document.getElementById("viewCardModal").setAttribute("aria-hidden", "false"); 
     } catch (error) {
@@ -433,7 +612,6 @@ document.getElementById("closeViewModal").addEventListener("click", function () 
     document.getElementById("viewCardModal").style.display = "none";
 });
 
-// Optional: Close the modal when clicking outside of it
 window.onclick = function(event) {
     if (event.target === document.getElementById("viewCardModal")) {
         document.getElementById("viewCardModal").style.display = "none";
@@ -452,6 +630,7 @@ addCardButtons.forEach(button => {
 document.getElementById("closeModal").addEventListener("click", function () {
     document.getElementById("addCardModal").style.display = "none";
 });
+
 
 
 function addKanbanCard(kanbanColumnId, item_id, title, description, status, priority, link) {
@@ -547,12 +726,89 @@ function addKanbanCard(kanbanColumnId, item_id, title, description, status, prio
 }
 
 
+function addRecycleKanbanCard(kanbanColumnId, item_id, title, description, status, priority, link) {
+    const kanbanCards = document.querySelector(`.kanban-column[data-id="${kanbanColumnId}"] .kanban-cards`);
+    const kanbanCard = document.createElement("div");
+    kanbanCard.classList.add("kanban-card");
+    kanbanCard.setAttribute("id", item_id);
 
+    const badge = document.createElement("div");
+    badge.classList.add("badge", toLowerCase(priority)); 
+    const badgeText = document.createElement("span");
+    badgeText.textContent = `${toTitleCase(priority)} priority`; //
+    badge.appendChild(badgeText);
 
+    const manipulateCard = document.createElement("div");
+    manipulateCard.classList.add("kanban-manipulate-card");
 
+    const cardTitle = document.createElement("p");
+    cardTitle.classList.add("card-title");
+    cardTitle.textContent = title;
+    manipulateCard.appendChild(cardTitle);
 
+    const cardInfos = document.createElement("div");
+    cardInfos.classList.add("card-infos");
+    
+    const cardIcons = document.createElement("div");
+    cardIcons.classList.add("card-icons");
 
+    const linkElement = document.createElement("p");
+    const anchor = document.createElement("a");
+    anchor.classList.add("icon-button");
+    anchor.href = link;
+    anchor.target = "_blank";
 
+    // const icon = document.createElement("i");
+    // icon.classList.add("fa-solid", "fa-paperclip");
+    // anchor.appendChild(icon);
+    // linkElement.appendChild(anchor);
+    // cardIcons.appendChild(linkElement);
+
+    // Create restore button
+    const restoreButton = document.createElement("p");
+    const restoreAnchor = document.createElement("button");
+    restoreAnchor.classList.add("edit-button");
+    const restoreIcon = document.createElement("i");
+    restoreIcon.classList.add("fa-solid", "fa-rotate-left");
+    restoreAnchor.appendChild(restoreIcon);
+    restoreButton.appendChild(restoreAnchor);
+    cardIcons.appendChild(restoreButton);
+    restoreAnchor.onclick = (event) => {event.stopPropagation(); restoreCard(item_id);};
+
+    // Create delete button
+    const deleteButton = document.createElement("p");
+    const deleteAnchor = document.createElement("button");
+    deleteAnchor.classList.add("icon-button");
+    deleteAnchor.onclick = (event) => {event.stopPropagation(); fullDeleteCards(item_id);}; // Pass the kanbanCard to delete function
+
+    const deleteIcon = document.createElement("i");
+    deleteIcon.classList.add("fa-solid", "fa-trash");
+    deleteAnchor.appendChild(deleteIcon);
+    deleteButton.appendChild(deleteAnchor);
+    cardIcons.appendChild(deleteButton);
+
+    // Assemble the card
+    cardInfos.appendChild(cardIcons);
+    kanbanCard.appendChild(badge);
+    kanbanCard.appendChild(manipulateCard);
+    kanbanCard.appendChild(cardInfos);
+
+    // Add drag events
+    kanbanCard.addEventListener('dragstart', e => {
+        e.currentTarget.classList.add('dragging');
+    });
+
+    kanbanCard.addEventListener('dragend', e => {
+        e.currentTarget.classList.remove('dragging');
+    });
+
+    kanbanCard.addEventListener('click', (event) => {
+        event.stopPropagation();
+        openViewModal(item_id)
+    });
+
+    kanbanCards.appendChild(kanbanCard);
+}
 
 
 

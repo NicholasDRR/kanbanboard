@@ -17,8 +17,7 @@ class Task(BaseModel):
     updated_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="The update date and time of the task")
     user_id: Optional[str] = None
     active: bool = Field(default=True, description="Indicates if the task is active (not deleted)")
-    deleted_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="The date and time when the task was deleted (soft delete)")
-
+    deleted_at: Optional[datetime] = None
     
     
 class TaskUpdate(BaseModel):

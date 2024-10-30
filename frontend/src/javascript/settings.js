@@ -1,9 +1,7 @@
-import { ambient, jwtToken } from './globals.js';
-
 $(document).ready(function() {
 
     function closeModal(modalId) {
-        $(`#${modalId}`).css('display', 'none'); // Hide the modal
+        $(`#${modalId}`).css('display', 'none'); 
     }
 
     $('#closeErrorModal').on('click', function() {

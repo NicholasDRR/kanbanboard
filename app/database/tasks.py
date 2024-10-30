@@ -9,8 +9,8 @@ def insert_task(task: Task):
     connection, cursor = connect_to_postgres()
     
     query = """
-    INSERT INTO tasks (title, description, status, priority, link, user_id, active, deleted_at) 
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
+    INSERT INTO tasks (title, description, status, priority, link, user_id, active) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
     
     try:
@@ -21,8 +21,7 @@ def insert_task(task: Task):
             task.priority.value,
             task.link,
             task.user_id,
-            task.active,         # This will default to True
-            task.deleted_at      # This will default to None
+            task.active        # This will default to True
         ))
         task_id = cursor.fetchone()[0] 
         connection.commit() 
@@ -40,7 +39,7 @@ def insert_task(task: Task):
 def get_task(task_id: str, user_id: str):
     connection, cursor = connect_to_postgres()
     
-    query = "SELECT * FROM tasks WHERE id = %s AND user_id = %s AND active = TRUE;"
+    query = "SELECT * FROM tasks WHERE id = %s AND user_id = %s;"
     
     try:
         cursor.execute(query, (task_id, user_id,))
@@ -57,13 +56,16 @@ def get_task(task_id: str, user_id: str):
                 link=task[6],
                 created_at=task[7],
                 updated_at=task[8],
-                active=True  
+                deleted_at=task[9],
+                active=task[10]
             )
         return task
     except Exception as error:
         logger.error(f"Error fetching task: {error}")
         return None
     finally:
+        logger.error(f"Error fetching task: {task_id}")
+        logger.error(f"Error fetching task: {user_id}")
         cursor.close()
         connection.close()
 
@@ -71,7 +73,7 @@ def get_task(task_id: str, user_id: str):
 def get_all_tasks(user_id):
     
     connection, cursor = connect_to_postgres()
-    query = "SELECT * FROM tasks WHERE user_id = %s AND active = TRUE;"
+    query = "SELECT * FROM tasks WHERE user_id = %s AND active = TRUE ORDER BY created_at DESC;"
     tasks = [] 
     
     try:
@@ -102,7 +104,7 @@ def get_all_tasks(user_id):
 
 def get_all_deleted_tasks(user_id):
     connection, cursor = connect_to_postgres()
-    query = "SELECT * FROM tasks WHERE user_id = %s AND active = False;"
+    query = "SELECT * FROM tasks WHERE user_id = %s AND active = False ORDER BY deleted_at DESC;"
     tasks = [] 
     
     try:
@@ -212,6 +214,26 @@ def delete_task(task_id: str, user_id: str):
         cursor.execute(query, (task_id, user_id))
         connection.commit()
         logger.info(f"Task {task_id} deleted successfully.")
+        return task_id
+    except Exception as error:
+        logger.error(f"Error deleting task: {error}")
+        connection.rollback()
+        return None
+    finally:
+        cursor.close()
+        connection.close()
+        
+def full_delete_task(task_id: str, user_id: str):
+    connection, cursor = connect_to_postgres()
+    query = """
+    DELETE FROM tasks
+    WHERE id = %s AND user_id = %s;
+    """
+
+    try:
+        cursor.execute(query, (task_id, user_id))
+        connection.commit()
+        logger.info(f"Task {task_id} full deleted successfully.")
         return task_id
     except Exception as error:
         logger.error(f"Error deleting task: {error}")

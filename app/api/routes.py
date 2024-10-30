@@ -32,7 +32,6 @@ def read_task(item_id: str, current_user: dict = Depends(get_current_user)):
 
 @router.post("/task/post", dependencies=[Depends(get_current_user)])
 def post_task(task: Task, current_user: dict = Depends(get_current_user)):
-    print(task)
     task.user_id = current_user['sub']
     return task_controller.create_task(task)
 
@@ -50,3 +49,8 @@ def activate_task(item_id: str, current_user: dict = Depends(get_current_user)):
 def delete_task(item_id: str, current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
     return task_controller.remove_task(item_id, user_id)
+
+@router.delete("/task/full_delete", dependencies=[Depends(get_current_user)])
+def full_delete_task(item_id: str, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return task_controller.full_remove_task(item_id, user_id)

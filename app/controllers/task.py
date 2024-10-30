@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from app.database.tasks import get_all_tasks, get_task, insert_task, update_task, delete_task, get_all_deleted_tasks, activate_task
+from app.database.tasks import get_all_tasks, get_task, insert_task, update_task, delete_task, full_delete_task, get_all_deleted_tasks, activate_task
 from app.models.task import Task, TaskUpdate
 from app.services.redis_service import RedisService
 
@@ -55,6 +55,14 @@ class TaskController:
         if not task_exists:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
         delete_success = delete_task(item_id, user_id)
+
+        return delete_success
+    
+    def full_remove_task(self, item_id: str, user_id: str):
+        task_exists = self.read_task(item_id=item_id, user_id=user_id)
+        if not task_exists:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+        delete_success = full_delete_task(item_id, user_id)
         if delete_success:
             self.redis_service.delete(item_id)
         return delete_success
