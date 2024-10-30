@@ -14,3 +14,11 @@ export function checkAuth() {
         window.location.href = "http://54.219.225.136:80/login"; 
     }
 }
+
+
+export function toTitleCase(str) {
+    return str.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
+export function toLowerCase(str) {
+    return str.toLowerCase();
+}

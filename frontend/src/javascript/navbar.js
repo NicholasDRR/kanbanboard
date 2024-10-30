@@ -9,6 +9,7 @@ const sidebarExpand = document.querySelector(".expand_sidebar");
 // Defina o tema escuro por padrão
 body.classList.add("dark");
 darkLight.classList.replace("bx-sun", "bx-moon"); // Atualize o ícone do tema
+darkLight.style.display = "none"; // Esconder o ícone de mudança de tema
 
 // Lógica de inicialização da sidebar
 if (window.innerWidth < 768) {
@@ -41,15 +42,15 @@ sidebar.addEventListener("mouseleave", () => {
   }
 });
 
-// Evento de clique para alternar tema claro/escuro
-darkLight.addEventListener("click", () => {
-  body.classList.toggle("dark");
-  if (body.classList.contains("dark")) {
-    darkLight.classList.replace("bx-sun", "bx-moon");
-  } else {
-    darkLight.classList.replace("bx-moon", "bx-sun");
-  }
-});
+// Evento de clique para alternar tema claro/escuro (remover se não for necessário)
+// darkLight.addEventListener("click", () => {
+//   body.classList.toggle("dark");
+//   if (body.classList.contains("dark")) {
+//     darkLight.classList.replace("bx-sun", "bx-moon");
+//   } else {
+//     darkLight.classList.replace("bx-moon", "bx-sun");
+//   }
+// });
 
 // Eventos para submenu
 submenuItems.forEach((item, index) => {

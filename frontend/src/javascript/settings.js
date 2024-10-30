@@ -95,10 +95,13 @@ $(document).ready(function() {
         });
     }
 
-    $('.unmask').on('click', function() {  
-        const input = $(this).prev('input');
-        input.prop('type', input.attr('type') === 'password' ? 'text' : 'password');  
-        return false; 
+    $('.unmask').on('click', function() {
+        const passwordField = $(this).prev('.password');
+        const fieldType = passwordField.attr('type') === 'password' ? 'text' : 'password';
+        passwordField.attr('type', fieldType);
+    
+        // Toggle icon for visibility
+        $(this).find('.unmask:before').toggleClass('fa-eye fa-eye-slash');
     });
 
     $('.password').on('keyup', function() {

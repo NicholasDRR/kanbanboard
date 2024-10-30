@@ -514,7 +514,7 @@ function addKanbanCard(kanbanColumnId, item_id, title, description, status, prio
     const deleteButton = document.createElement("p");
     const deleteAnchor = document.createElement("button");
     deleteAnchor.classList.add("icon-button");
-    deleteAnchor.onclick = () => fullDeleteCards(item_id); // Pass the kanbanCard to delete function
+    deleteAnchor.onclick = (event) => {event.stopPropagation(); fullDeleteCards(item_id);}; // Pass the kanbanCard to delete function
 
     const deleteIcon = document.createElement("i");
     deleteIcon.classList.add("fa-solid", "fa-trash");
