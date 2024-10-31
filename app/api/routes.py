@@ -30,6 +30,11 @@ def read_task(item_id: str, current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
     return task_controller.read_task(item_id=item_id, user_id=user_id)
 
+@router.get("/task/searchbar", dependencies=[Depends(get_current_user)])
+def read_searchbar(search_term: str, active: bool, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return task_controller.read_searchbar(search_term=search_term, user_id=user_id, active=active)
+
 @router.post("/task/post", dependencies=[Depends(get_current_user)])
 def post_task(task: Task, current_user: dict = Depends(get_current_user)):
     task.user_id = current_user['sub']

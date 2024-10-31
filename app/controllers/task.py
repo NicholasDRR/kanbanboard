@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from app.database.tasks import get_all_tasks, get_task, insert_task, update_task, delete_task, full_delete_task, get_all_deleted_tasks, activate_task
+from app.database.tasks import get_all_tasks, get_task, insert_task, update_task, delete_task, full_delete_task, get_all_deleted_tasks, get_searchbar, activate_task
 from app.models.task import Task, TaskUpdate
 from app.services.redis_service import RedisService
 
@@ -21,6 +21,17 @@ class TaskController:
 
     def read_task(self, item_id: str, user_id: str):  
         task = get_task(item_id, user_id)
+        if not task:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
+        return task
+    
+    def read_searchbar(self, search_term: str, user_id: str, active:bool): 
+        if active:
+            activate_term = 'TRUE'
+        else:
+            activate_term = 'FALSE'
+        
+        task = get_searchbar(search_term, user_id, activate_term)
         if not task:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
         return task

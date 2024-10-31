@@ -64,8 +64,49 @@ def get_task(task_id: str, user_id: str):
         logger.error(f"Error fetching task: {error}")
         return None
     finally:
-        logger.error(f"Error fetching task: {task_id}")
-        logger.error(f"Error fetching task: {user_id}")
+        cursor.close()
+        connection.close()
+        
+        
+def get_searchbar(search_term: str, user_id: str, active: str):
+    connection, cursor = connect_to_postgres()
+    
+    query = """
+    SELECT * 
+    FROM tasks
+    WHERE 
+        (title LIKE CONCAT('%%', %s, '%%')
+        OR description LIKE CONCAT('%%', %s, '%%')
+        OR link LIKE CONCAT('%%', %s, '%%'))
+        AND user_id = %s
+        AND active = %s
+    ORDER BY created_at DESC
+    LIMIT 1;
+    """
+    
+    try:
+        cursor.execute(query, (search_term, search_term, search_term, user_id, active))
+        
+        task = cursor.fetchone()
+        
+        if task:
+            return Task(
+                id=task[0],
+                user_id=task[1],
+                title=task[2],
+                description=task[3],
+                status=task[4],
+                priority=task[5],
+                link=task[6],
+                created_at=task[7],
+                updated_at=task[8],
+                deleted_at=task[9]
+            )
+        return None 
+    except Exception as error:
+        logger.error(f"Error fetching task: {error}")
+        return None
+    finally:
         cursor.close()
         connection.close()
 

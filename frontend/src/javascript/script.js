@@ -3,6 +3,7 @@ let globalButtonValue;
 let globalColumnValue;
 let currentEditingCard;
 let globalBoard;
+let globalSearchTerm;
 let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmJkMjA0NS01NWNmLTQ5MGEtOTdjYS1kMDg2MTllMGEzYjUiLCJleHAiOjE3MzI5MTEwMjR9.Yr2yZKef0MJ7x-8DtSoXs7CLpQygs6EphFkQFTvdbr8';
 let ambient = 'localhost'
 const addCardButtons = document.querySelectorAll(".add-card");
@@ -56,21 +57,59 @@ function getCardById(cardId) {
     }
 }
 
-
+function closeModal(modalId) {
+    $(`#${modalId}`).css('display', 'none'); 
+}
 
 $(document).ready(function() {
 
-    function closeModal(modalId) {
-        $(`#${modalId}`).css('display', 'none'); 
-    }
+    $('#closeNoticeModal').on('click', function() {
+        closeModal('noticeModal');
+    });
 
+    $('#closeInfoModal').on('click', function() {
+        closeModal('infoModal');
+    });
+
+    $('#notFoundModal').on('click', function() {
+        closeModal('notFoundModal');
+    });
 
     $(window).on('click', function(event) {
         if ($(event.target).is('#noticeModal')) {
             closeModal('noticeModal');
         }
-        
+        if ($(event.target).is('#infoModal')) {
+            closeModal('infoModal');
+        }
+        if ($(event.target).is('#notFoundModal')) {
+            closeModal('notFoundModal');
+        }
     });
+
+    $('#searchInput').on('keypress', function(event) {
+        if (event.key === 'Enter') {
+            const searchValue = $(this).val().trim();
+            if (searchValue) {
+                readSearchBar(searchValue)
+                    .then(({ id, status }) => { 
+                        console.log("Status:", status); 
+                        openViewModal(id);
+                        $(this).val('');
+                    })
+                    .catch(({ status, error }) => {
+                        if (status == 404)
+                        {
+                            $('#notFoundModal').css('display', 'flex');
+                        }
+                    });
+            } else {
+                console.log('O campo está vazio. Digite algo antes de pressionar Enter.');
+            }
+        }
+    });
+
+
     $(document).on('click', '#settingsButton', function(e) {
         e.preventDefault();
         
@@ -90,12 +129,12 @@ $(document).ready(function() {
         });
     });
 
-
-
     $('#kanbanBoardButton').click(function(e) {
         e.preventDefault(); 
 
         globalBoard = 'default'
+        globalSearchTerm = true
+
         document.querySelector('#boardTitle h1').innerText = 'KanbanBoard';
         titleAnimation()
 
@@ -129,8 +168,9 @@ $(document).ready(function() {
 
     $('#kanbanRecycleBoardButton').click(function(e) {
         e.preventDefault(); 
-
         globalBoard = 'recycle'
+        globalSearchTerm = false
+        
         document.querySelector('#boardTitle h1').innerText = 'RecycleBoard';
         titleAnimation()
 
@@ -141,12 +181,14 @@ $(document).ready(function() {
         const buttons = document.getElementsByClassName('add-card');
 
         for (let i = 0; i < buttons.length; i++) {
-            buttons[i].style.display = 'none'; // Torna o botão invisível
+            buttons[i].style.display = 'none'; 
         }
 
         $('.kanban').removeClass('hidden')
         
-        readDeletedTasks().then(function(tasks) {
+        readDeletedTasks().then(function(response) {
+            const tasks = response.tasks;
+            const status = response.status;
             globalAllTasksData = tasks;
             insertBackLogCards();
             insertDoingCards();
@@ -154,8 +196,12 @@ $(document).ready(function() {
             insertDoneCards();
         }).catch(function(error) {
             console.error("Failed to read tasks:", error);
+            if (error.status === 404) { 
+                $('#infoModal').css('display', 'flex');
+            }
         });
     }); 
+
 
 });
 
@@ -301,14 +347,12 @@ function readDeletedTasks() {
             'Authorization': `Bearer ${jwtToken}`,
             'Accept': 'application/json'
         },
-        success: function(tasks) {
-            tasks.forEach(function(task) {
-                console.log(task)
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error("Error reading tasks:", error);
-        }
+        
+    }).then(function(tasks, textStatus, jqXHR) {
+        return {
+            tasks: tasks,
+            status: jqXHR.status 
+        };
     });
 }
 
@@ -328,6 +372,29 @@ function readSpecificTask(taskId) {
             error: function(xhr, status, error) {
                 console.error("Error getting task details:", error);
                 reject(error); // Rejeite a Promise em caso de erro
+            }
+        });
+    });
+}
+
+function readSearchBar(searchTerm) {
+    let url = `http://${ambient}:8000/tasks/task/searchbar?search_term=${searchTerm}&active=${globalSearchTerm}`;
+
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            url: url,
+            crossDomain: true,
+            type: "GET",
+            headers: {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Accept': 'application/json'
+            },
+            success: function(response, statusText, xhr) {
+                resolve({ id: response.id, status: xhr.status }); // Retorna o id e o status
+            },
+            error: function(xhr, statusText, error) {
+                console.error("Error getting task details:", error);
+                reject({ status: xhr.status, error }); // Captura o status em caso de erro
             }
         });
     });
