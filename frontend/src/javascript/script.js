@@ -4,14 +4,16 @@ let globalColumnValue;
 let currentEditingCard;
 let globalBoard;
 let globalSearchTerm;
-let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmJkMjA0NS01NWNmLTQ5MGEtOTdjYS1kMDg2MTllMGEzYjUiLCJleHAiOjE3MzI5MTEwMjR9.Yr2yZKef0MJ7x-8DtSoXs7CLpQygs6EphFkQFTvdbr8';
+// let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmJkMjA0NS01NWNmLTQ5MGEtOTdjYS1kMDg2MTllMGEzYjUiLCJleHAiOjE3MzI5MTEwMjR9.Yr2yZKef0MJ7x-8DtSoXs7CLpQygs6EphFkQFTvdbr8';
+let jwtToken;
 let ambient = 'localhost'
 const addCardButtons = document.querySelectorAll(".add-card");
 const kanbanCards = document.querySelectorAll('.kanban-card');
 const backEndUrl = 'http://54.219.225.136:8000/tasks';
 
 function getJwtToken() {
-    return localStorage.getItem('jwtToken'); 
+    // return localStorage.getItem('jwtToken'); 
+    jwtToken = localStorage.getItem('jwtToken'); 
 }
 function checkAuth() {
     const token = localStorage.getItem('jwtToken');
@@ -49,10 +51,8 @@ function formatDateToBrazilian(dateString) {
 function getCardById(cardId) {
     const card = document.getElementById(cardId);
     if (card) {
-        console.log("Card encontrado:", card);
         return card;
     } else {
-        console.error("Card não encontrado com o ID:", cardId);
         return null;
     }
 }
@@ -63,6 +63,11 @@ function closeModal(modalId) {
 
 
 $(document).ready(function() {
+    checkAuth()
+    getJwtToken()
+
+
+
     $('.kanban').hide()
     $('.search_bar').hide();
 
@@ -100,7 +105,6 @@ $(document).ready(function() {
             if (searchValue) {
                 readSearchBar(searchValue)
                     .then(({ id, status }) => { 
-                        console.log("Status:", status); 
                         openViewModal(id);
                         $(this).val('');
                     })
@@ -116,10 +120,15 @@ $(document).ready(function() {
         }
     });
 
+    $(document).on('click', '#logoutButton', function(e) {
+        e.preventDefault();
+        Logout();
+    });
+
 
     $(document).on('click', '#settingsButton', function(e) {
         e.preventDefault();
-        
+        $('.search_bar').hide();
         $('.kanban').addClass('hidden');
         $('#welcomeContainer').css('display', 'none');
         
@@ -325,9 +334,8 @@ function fullDeleteCards(item_id) {
             deleteCard(item_id);
         }
         
-        console.log(`Item ${item_id} deletado com sucesso.`);
     } catch (error) {
-        console.error(`Erro ao deletar a tarefa do item ${item_id}:`, error);
+        console.error(`Erro ao deletar a tarefa`);
     }
 }
 
@@ -335,9 +343,8 @@ function restoreCard(item_id) {
     try{
         activeTask(item_id)
         deleteCard(item_id)
-        console.log(`Item ${item_id} reativado com sucesso.`);
     } catch (error) {
-        console.error(`Erro ao restaurar a tarefa do item ${item_id}:`, error);
+        console.error(`Erro ao restaurar a tarefa`);
     }
     
 }
@@ -435,10 +442,10 @@ function activeTask(taskId) {
             'Content-Type': 'application/json'
         },
         success: function(response) {
-            console.log("Task activated successfully:", response);
+            console.log("Task activated successfully:");
         },
         error: function(xhr, status, error) {
-            console.error("Error activating task:", error);
+            console.error("Error activating task:");
         }
     });
 }
@@ -473,10 +480,30 @@ function fullDeleteTask(taskId) {
             'Content-Type': 'application/json'
         },
         success: function(response) {
-            console.log("Task full deleted successfully:", response);
+            console.log("Task full deleted successfully:");
         },
         error: function(xhr, status, error) {
-            console.error("Error deleting task:", error);
+            console.error("Error deleting task:");
+        }
+    });
+}
+
+function Logout() {
+    $.ajax({
+        url: `http://localhost:8000/auth/logout`,
+        crossDomain: true,
+        type: "POST",
+        headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        success: function(response) {
+            localStorage.removeItem('jwtToken');
+            window.location.href = "http://localhost:5501/frontend/login/login.html";
+        },
+        error: function(xhr, status, error) {
+            console.error("Error in logout:");
         }
     });
 }
@@ -493,8 +520,7 @@ document.getElementById("addCardForm").addEventListener("submit", async function
     const link = document.getElementById("link").value || "";
 
     try {
-        const task_id = await saveTask(title, description, priority, status, link); // Espera a Promise ser resolvida
-        console.log(task_id);
+        const task_id = await saveTask(title, description, priority, status, link);
         if (task_id) {
             addKanbanCard(column, task_id, title, description, status, priority, link);
         } else {
@@ -525,8 +551,6 @@ function saveTask(taskName, taskDescription, taskPriority, taskStatus, taskLink)
             taskData["link"] = taskLink;
         }
 
-        console.log(JSON.stringify(taskData));
-
         $.ajax({
             url: `http://${ambient}:8000/tasks/task/post`,
             crossDomain: true,
@@ -538,11 +562,11 @@ function saveTask(taskName, taskDescription, taskPriority, taskStatus, taskLink)
             contentType: "application/json",
             data: JSON.stringify(taskData),
             success: function(response) {
-                console.log("Task saved successfully:", response);
+                console.log("Task saved successfully:");
                 resolve(response); // Resolve a Promise com a resposta
             },
             error: function(xhr, status, error) {
-                console.error("Error saving task:", error);
+                console.error("Error saving task:");
                 reject(error); // Rejeita a Promise em caso de erro
             }
         });
@@ -574,11 +598,11 @@ function updateTask(taskData) {
             contentType: "application/json",
             data: JSON.stringify(taskData),
             success: function(response) {
-                console.log("Task updated successfully:", response);
+                console.log("Task updated successfully:");
                 resolve(response); // Resolve a Promise com a resposta
             },
             error: function(xhr, status, error) {
-                console.error("Error updating task:", error);
+                console.error("Error updating task:");
                 reject(error); // Rejeita a Promise em caso de erro
             }
         });
@@ -651,11 +675,9 @@ async function openViewModal(cardId) {
         if (cardData.link && cardData.link !== "#") {
             linkElement.href = cardData.link;
             linkElement.textContent = "View Link"; 
-            linkContainer.style.display = "block"; // Mostra o contêiner do link
-            console.log("Link válido, mostrando:", cardData.link);
+            linkContainer.style.display = "block";
         } else {
-            linkContainer.style.display = "none"; // Esconde o contêiner do link
-            console.log("Link inválido, escondendo.");
+            linkContainer.style.display = "none"; 
         }
 
         const updatedElement = document.getElementById("view-updated");
@@ -681,9 +703,6 @@ async function openViewModal(cardId) {
         const deletedElement = document.getElementById("view-deleted");
         const deletedContainer = document.getElementById("deleted-container");
 
-
-        console.log(cardData.deleted_at)
-        console.log(cardData.id)
         if (cardData.deleted_at) {
             deletedElement.textContent = formatDateToBrazilian(cardData.deleted_at);
             deletedContainer.style.display = "block";
@@ -756,18 +775,21 @@ function addKanbanCard(kanbanColumnId, item_id, title, description, status, prio
     const cardIcons = document.createElement("div");
     cardIcons.classList.add("card-icons");
 
-    // Create link element
-    const linkElement = document.createElement("p");
-    const anchor = document.createElement("a");
-    anchor.classList.add("icon-button");
-    anchor.href = link;
-    anchor.target = "_blank"; // Open link in a new tab
+    if (link)
+    {
+        const linkElement = document.createElement("p");
+        const anchor = document.createElement("a");
+        anchor.classList.add("icon-button");
+        anchor.href = link;
+        anchor.target = "_blank"; // Open link in a new tab
 
-    const icon = document.createElement("i");
-    icon.classList.add("fa-solid", "fa-paperclip");
-    anchor.appendChild(icon);
-    linkElement.appendChild(anchor);
-    cardIcons.appendChild(linkElement);
+        const icon = document.createElement("i");
+        icon.classList.add("fa-solid", "fa-paperclip");
+        anchor.appendChild(icon);
+        linkElement.appendChild(anchor);
+        cardIcons.appendChild(linkElement);
+    }
+    
 
     // Create edit button
     const editButton = document.createElement("p");
@@ -909,9 +931,8 @@ function deleteCard(item_id) {
     const cardElement = document.getElementById(item_id);
     if (cardElement) {
         cardElement.remove(); 
-        console.log(`Cartão com ID ${item_id} foi removido.`); 
     } else {
-        console.log(`Cartão com ID ${item_id} não encontrado.`);
+        console.log(`Cartão não encontrado.`);
     }
 }
 
@@ -951,7 +972,6 @@ document.getElementById("editCardForm").addEventListener("submit", async functio
     }
     try {
         const task_id = await updateTask(taskData); // Espera a Promise ser resolvida
-        console.log(task_id);
         if (task_id) {
             updateKanbanCard(currentEditingCard, taskData.title, taskData.description, toTitleCase(taskData.priority), taskData.link);
         } else {
@@ -970,11 +990,9 @@ document.getElementById("editCardForm").addEventListener("submit", async functio
 function updateKanbanCard(cardId, title, description, priority, link) {
     
     card = getCardById(cardId)
-    console.log(card)
 
     card.querySelector(".card-title").textContent = title;
 
-    console.log(toLowerCase(priority))
     const badge = card.querySelector(".badge");
     badge.className = ""; // Clear current classes
     badge.classList.add("badge", toLowerCase(priority)); 

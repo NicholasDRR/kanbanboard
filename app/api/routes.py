@@ -12,7 +12,7 @@ task_controller = TaskController()
 user_controller = UserController()
 
 def get_current_user(token: str = Depends(user_controller.oauth2_scheme)):
-    payload = user_controller.return_token(token)
+    payload = user_controller.return_payload(token)
     return payload
 
 @router.get("/", dependencies=[Depends(get_current_user)])

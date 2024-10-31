@@ -29,13 +29,16 @@ $(document).ready(function() {
 
         if (validatePasswords(newPassword, confirmPassword)) {
             ChangeUserPassword(oldPassword, newPassword)
-                .then(({ status }) => {  // Destructure to get the status
-                    console.log(status);
+                .then(({ status }) => {
                     if (status === 204 || status === 201) { // Check for both 204 and 201
                         $('#successModal').css('display', 'flex');
+                        setTimeout(function() {
+                            Logout();
+                        }, 4000);
                     } else {
                         $('#errorModal').css('display', 'flex');
                     }
+                    
                 })
                 .catch(({ status }) => {
                     console.error("Error changing password:", status);

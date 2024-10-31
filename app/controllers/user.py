@@ -72,7 +72,7 @@ class UserController:
         if select_revoked_token(user_id=user_id, token=token):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail={"msg": "Token has been revoked"})
     
-    def return_token(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
+    def return_payload(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
         payload = self.decode_token(token)
         user_id = payload['sub'] 
         
@@ -95,6 +95,17 @@ class UserController:
         
         self.check_token_revocation(token, payload['sub'])
         return payload
+
+    def verify_token_logout(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
+        payload = self.decode_token(token)
+        user_id = payload['sub'] 
+        
+        existing_token = self.redis_service.get_token(user_id)
+        if existing_token:
+            return token
+        
+        self.check_token_revocation(token, payload['sub'])
+        return token
     
     def login(self, user: OAuth2PasswordRequestForm):
         user_data = get_user_by_email(user.username)

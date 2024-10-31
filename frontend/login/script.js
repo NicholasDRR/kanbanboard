@@ -1,7 +1,6 @@
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
 const container = document.getElementById('container');
-// let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmJkMjA0NS01NWNmLTQ5MGEtOTdjYS1kMDg2MTllMGEzYjUiLCJleHAiOjE3MzI5MTEwMjR9.Yr2yZKef0MJ7x-8DtSoXs7CLpQygs6EphFkQFTvdbr8';
 let ambient = 'localhost:8000'
 const globalBackendURL = `http://${ambient}/users/user/post`
 
@@ -54,7 +53,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
             password: password
         }));
 
-        console.log('Login successful:', response.data);
+        console.log('Login successful!');
         alert('Login successful!');
         localStorage.setItem('jwtToken', response.data.access_token);
 		
