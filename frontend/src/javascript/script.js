@@ -61,19 +61,26 @@ function closeModal(modalId) {
     $(`#${modalId}`).css('display', 'none'); 
 }
 
+
 $(document).ready(function() {
+    $('.kanban').hide()
+    $('.search_bar').hide();
 
-    $('#closeNoticeModal').on('click', function() {
-        closeModal('noticeModal');
+    $('.welcome-button').on('click', function() {
+        $('#welcomeContainer').hide()
+        $('#kanbanBoardButton')[0].click(); 
     });
 
-    $('#closeInfoModal').on('click', function() {
-        closeModal('infoModal');
+    
+    $('.logo_item').on('click', function() {
+        
+        $('.kanban').hide()
+        $('#box').hide()
+        $('.search_bar').hide();
+        $('#welcomeContainer').show()
     });
 
-    $('#notFoundModal').on('click', function() {
-        closeModal('notFoundModal');
-    });
+
 
     $(window).on('click', function(event) {
         if ($(event.target).is('#noticeModal')) {
@@ -114,6 +121,7 @@ $(document).ready(function() {
         e.preventDefault();
         
         $('.kanban').addClass('hidden');
+        $('#welcomeContainer').css('display', 'none');
         
         $.ajax({
             url: 'src/components/password/index.html',
@@ -121,7 +129,6 @@ $(document).ready(function() {
             success: function(data) {
                 $('#settingsPage').html(data).show();
                 $('#myform-search')[0].reset(); 
-                $('.search_bar').hide();
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 console.error("Failed to load settings page:", textStatus, errorThrown);
@@ -131,6 +138,9 @@ $(document).ready(function() {
 
     $('#kanbanBoardButton').click(function(e) {
         e.preventDefault(); 
+        $('.kanban').css('display', 'flex');
+        $('#welcomeContainer').css('display', 'none');
+        $('.search_bar').show();
 
         globalBoard = 'default'
         globalSearchTerm = true
@@ -147,7 +157,6 @@ $(document).ready(function() {
 
         $('.kanban .kanban-cards').empty(); 
         $('#settingsPage').hide();
-        $('.search_bar').show();
         $('.kanban').removeClass('hidden')
         
         readTasks().then(function(response) {
@@ -168,6 +177,9 @@ $(document).ready(function() {
 
     $('#kanbanRecycleBoardButton').click(function(e) {
         e.preventDefault(); 
+        $('.kanban').css('display', 'flex');
+        $('#welcomeContainer').css('display', 'none');
+        $('.search_bar').show();
         globalBoard = 'recycle'
         globalSearchTerm = false
         
@@ -202,6 +214,18 @@ $(document).ready(function() {
         });
     }); 
 
+
+    $('#closeNoticeModal').on('click', function() {
+        closeModal('noticeModal');
+    });
+
+    $('#closeInfoModal').on('click', function() {
+        closeModal('infoModal');
+    });
+
+    $('#notFoundModal').on('click', function() {
+        closeModal('notFoundModal');
+    });
 
 });
 

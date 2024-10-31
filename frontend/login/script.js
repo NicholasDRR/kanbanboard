@@ -1,6 +1,9 @@
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
 const container = document.getElementById('container');
+// let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmJkMjA0NS01NWNmLTQ5MGEtOTdjYS1kMDg2MTllMGEzYjUiLCJleHAiOjE3MzI5MTEwMjR9.Yr2yZKef0MJ7x-8DtSoXs7CLpQygs6EphFkQFTvdbr8';
+let ambient = 'localhost:8000'
+const globalBackendURL = `http://${ambient}/users/user/post`
 
 
 signUpButton.addEventListener('click', () => {
@@ -19,7 +22,7 @@ document.getElementById('signup-form').addEventListener('submit', async function
 
     try {
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-        const response = await axios.post('http://54.219.225.136:8000/users/user/post', {
+        const response = await axios.post(globalBackendURL, {
             email: email,
             password: password
         });
@@ -46,7 +49,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
 
     try {
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-        const response = await axios.post('http://54.219.225.136:8000/auth/login', new URLSearchParams({
+        const response = await axios.post('http://localhost:8000/auth/login', new URLSearchParams({
             username: email,
             password: password
         }));
@@ -55,7 +58,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
         alert('Login successful!');
         localStorage.setItem('jwtToken', response.data.access_token);
 		
-		window.location.href = "http://54.219.225.136:80/";
+		window.location.href = `http://localhost:5501/frontend/`;
     } catch (error) {
         console.error('Error logging in:', error);
         alert('Error logging in. Please check your credentials and try again.'); 

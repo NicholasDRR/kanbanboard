@@ -29,6 +29,72 @@ body{
   height: 100%;
 }
 
+
+/* Welcome Container Styles */
+.welcome-container {
+  margin-left: 260px; 
+  margin-top: 40px; 
+  text-align: left;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 40px;
+  width: 80%; 
+  max-width: 800px; 
+}
+
+.logo_item {
+  cursor: pointer; /* Changes the cursor to a pointer on hover */
+}
+
+/* Welcome Title Styles */
+.welcome-title {
+  color: #e0e0e0;
+  margin-bottom: 20px; /* Space below the title */
+}
+
+/* Welcome Subtitle Styles */
+.welcome-subtitle {
+  color: #e0e0e0; /* Subtitle color */
+  margin-top: 30px; /* Space above the subtitle */
+}
+
+/* Welcome Intro and Description Styles */
+.welcome-intro,
+.welcome-description {
+  color: #e0e0e0;
+  margin-bottom: 15px; /* Space below paragraphs */
+}
+
+/* Welcome List Styles */
+.welcome-list {
+  margin-left: 20px; /* Aligns the list */
+  color: #e0e0e0;
+}
+
+/* Welcome Footer Styles */
+.welcome-footer {
+  color: #e0e0e0;
+  margin-bottom: 20px; /* Space below footer text */
+}
+
+/* Welcome Button Styles */
+.welcome-button {
+  background-color: #4CAF50;
+  color: #e0e0e0;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px; /* Space above the button */
+}
+
+.welcome-button:hover {
+  background-color: #45a049;
+}
+
+
+
 .kanban-manipulate-card {
   transition: color 0.3s ease; /* Suaviza a transição da cor do texto */
 }
