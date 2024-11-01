@@ -1,8 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from app.controllers.task import TaskController
 from app.models.task import Task, TaskUpdate
 from app.controllers.user import UserController
-from app.config.logging import logger
 
 router = APIRouter(
     prefix="/tasks",
@@ -13,7 +12,7 @@ task_controller = TaskController()
 user_controller = UserController()
 
 def get_current_user(token: str = Depends(user_controller.oauth2_scheme)):
-    payload = user_controller.return_token(token)
+    payload = user_controller.return_payload(token)
     return payload
 
 @router.get("/", dependencies=[Depends(get_current_user)])
@@ -21,15 +20,20 @@ def read_tasks(current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
     return task_controller.read_tasks(user_id)
 
-@router.get("/completed", dependencies=[Depends(get_current_user)])
-def read_completed_tasks(current_user: dict = Depends(get_current_user)):
+@router.get("/deleted", dependencies=[Depends(get_current_user)])
+def read_deleted_tasks(current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
-    return task_controller.read_completed_tasks(user_id)
+    return task_controller.read_deleted_tasks(user_id)
 
 @router.get("/task/", dependencies=[Depends(get_current_user)])
 def read_task(item_id: str, current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
     return task_controller.read_task(item_id=item_id, user_id=user_id)
+
+@router.get("/task/searchbar", dependencies=[Depends(get_current_user)])
+def read_searchbar(search_term: str, active: bool, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return task_controller.read_searchbar(search_term=search_term, user_id=user_id, active=active)
 
 @router.post("/task/post", dependencies=[Depends(get_current_user)])
 def post_task(task: Task, current_user: dict = Depends(get_current_user)):
@@ -41,7 +45,17 @@ def update_task(item_id: str, task: TaskUpdate, current_user: dict = Depends(get
     task.user_id = current_user['sub']
     return task_controller.modify_task(item_id, task)
 
+@router.put("/task/activate", dependencies=[Depends(get_current_user)])
+def activate_task(item_id: str, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return task_controller.activate_task(item_id, user_id)
+
 @router.delete("/task/delete", dependencies=[Depends(get_current_user)])
 def delete_task(item_id: str, current_user: dict = Depends(get_current_user)):
     user_id = current_user['sub']
     return task_controller.remove_task(item_id, user_id)
+
+@router.delete("/task/full_delete", dependencies=[Depends(get_current_user)])
+def full_delete_task(item_id: str, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    return task_controller.full_remove_task(item_id, user_id)

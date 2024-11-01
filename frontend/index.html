@@ -1,110 +1,241 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <link rel="stylesheet" href="./index.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="./script.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="src/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script><script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Kanban Board</title>
 </head>
 <body>
-    <div class="container">
-        <div class="kanban-heading">
-            <strong class="kanban-heading-text">Kanban Board</strong>
+    <!-- navbar -->
+    <nav class="navbar">
+        <div  class="logo_item">
+            <i class="bx bx-menu" id="sidebarOpen"></i>
+            <img src="src/images/LOGO.jfif" alt="Logo"> KanbanBoard
         </div>
-        <div class="kanban-board">
-            <div class="kanban-block" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <strong>To Do</strong>
-                <div class="task-button-block">
-                    <button id="task-button" onclick="createTask()">Create new task</button>
+
+        <div class="search_bar">
+            <input type="text" placeholder="Search" id="searchInput"/>
+        </div>
+
+        <div class="navbar_content">
+            <i class="bi bi-grid"></i>
+            <i class='bx bx-sun' id="darkLight"></i>
+        </div>
+    </nav>
+
+    <!-- sidebar -->
+    <nav class="sidebar">
+        <div class="menu_content">
+            <ul class="menu_items">
+                <li class="item">
+                    <div class="nav_link submenu_item">
+                        <span class="navlink_icon">
+                            <i class="bx bx-home-alt"></i>
+                        </span>
+                        <span class="navlink">Home</span>
+                        <i class="bx bx-chevron-right arrow-left"></i>
+                    </div>
+                    <ul class="menu_items submenu">
+                        <a class="nav_link sublink" id="kanbanBoardButton">Kanban Board</a>
+                        <a class="nav_link sublink" id="kanbanRecycleBoardButton">Recycle Board</a>
+                    </ul>
+                </li>
+                
+            </ul>
+
+            <ul class="menu_items">
+                <div class="menu_title menu_setting"></div>
+    
+                <div class="nav_link submenu_item">
+                    <span class="navlink_icon">
+                        <i class="bx bx-cog"></i>
+                    </span>
+                    <span class="navlink">Settings</span>
+                    <i class="bx bx-chevron-right arrow-left"></i>
+                </div>
+                
+                <ul class="menu_items submenu">
+                    <a class="nav_link sublink" id="settingsButton" >Password</a>
+                    <a class="nav_link sublink" id="logoutButton" >Logout</a>
+                </ul>
+                
+            </ul>
+
+            <div class="bottom_content">
+                <div class="bottom expand_sidebar">
+                    <span> Expand</span>
+                    <i class='bx bx-log-in'></i>
+                </div>
+                <div class="bottom collapse_sidebar">
+                    <span> Collapse</span>
+                    <i class='bx bx-log-out'></i>
                 </div>
             </div>
-
-            <div class="kanban-block" id="inprogress" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <strong>In Progress</strong>
-            </div>
-
-            <div class="kanban-block" id="done" ondrop="drop(event)" ondragover="allowDrop(event)">
-                <strong>Done</strong>
-            </div>
-
-            <div class="create-new-task-block" id="create-new-task-block">
-                <strong>New Task</strong>
-                <span class="form-row">
-                    <label class="form-row-label" for="task-name">Title</label>
-                    <input class="form-row-input" type="text" name="task-name" id="task-name">
-                </span>
-                <span class="form-row">
-                    <label class="form-row-label" for="task-description">Description</label>
-                    <textarea class="form-row-input" name="task-description" id="task-description" cols="70" rows="10"></textarea>
-                </span>
-                <span class="form-row">
-                    <label class="form-row-label" for="task-type">Type</label>
-                    <select class="form-row-input" name="task-type" id="task-type">
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
-                </span>
-                <span class="form-row">
-                    <label class="form-row-label" for="task-status">Status</label>
-                    <select class="form-row-input" name="task-status" id="task-status">
-                        <option value="pending">To Do</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Done</option>
-                    </select>
-                </span>
-                <span class="form-row-buttons">
-                    <button id="save-button" onclick="saveTask()">Save</button>
-                    <button id="cancel-button" onclick="createTask()">Cancel</button>
-                </span>
-            </div>
-
-
-            <div class="update-task-block" id="update-task-block">
-                <strong>Update Task</strong>
-                <span class="form-row">
-                    <label class="form-row-label" for="update-task-name">Title</label>
-                    <input class="form-row-input" type="text" name="update-task-name" id="update-task-name">
-                </span>
-                <span class="form-row">
-                    <label class="form-row-label" for="update-task-description">Description</label>
-                    <textarea class="form-row-input" name="update-task-description" id="update-task-description" cols="70" rows="10"></textarea>
-                </span>
-                <span class="form-row">
-                    <label class="form-row-label" for="update-task-type">Type</label>
-                    <select class="form-row-input" name="update-task-type" id="update-task-type">
-                        <option value="easy">Easy</option>
-                        <option value="medium">Medium</option>
-                        <option value="hard">Hard</option>
-                    </select>
-                </span>
-                <span class="form-row">
-                    <label class="form-row-label" for="update-task-status">Status</label>
-                    <select class="form-row-input" name="update-task-status" id="update-task-status">
-                        <option value="pending">To Do</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="completed">Done</option>
-                    </select>
-                </span>
-                <span class="form-row-buttons">
-                    <button onclick="updateTaskDB()">Edit</button>
-                    <button id="cancel-button" onclick="updateTaskModal()">Cancel</button>
-                </span>
-            </div>
-            
         </div>
+    </nav>
+
+    <div class="welcome-container" id="welcomeContainer">
+        <h1 class="welcome-title">Welcome to the Kanban Board!</h1>
+        <p class="welcome-intro">We're glad to have you here! The Kanban Board is a powerful tool that helps teams manage tasks efficiently by providing a clear visualization of the workflow.</p>
+        
+        <h2 class="welcome-subtitle">Importance of Agile Methodologies</h2>
+        <p class="welcome-description">Agile methodologies are essential in today's work environment, allowing teams to quickly adapt to changes and continuously improve their processes. By adopting an agile approach, you can:</p>
+        <ul class="welcome-list">
+            <li><strong>Increase transparency:</strong> Everyone on the team can see what is being done, who is doing it, and what still needs to be completed.</li>
+            <li><strong>Enhance collaboration:</strong> Teamwork is encouraged, promoting communication and interaction among members.</li>
+            <li><strong>Focus on customer value:</strong> Agile teams concentrate on delivering value quickly, adjusting to customer needs in real time.</li>
+            <li><strong>Promote continuous improvement:</strong> Iterations allow teams to regularly review and adjust their processes.</li>
+        </ul>
+
+        <p class="welcome-footer">Get ready to organize your tasks and boost your productivity with Kanban!</p>
+        <button class="welcome-button">Get Started</button>
     </div>
 
-    <div id="task-detail-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Task Details</h2>
-            <p><strong>Title:</strong> <span id="detail-title"></span></p>
-            <p><strong>Description:</strong> <span id="detail-description"></span></p>
-            <p><strong>Type:</strong> <span id="detail-type"></span></p>
-            <p><strong>Status:</strong> <span id="detail-status"></span></p>
-        </div>
-    </div>
 
+    <main class="kanban">
+        <div id="boardTitle">
+            <h1></h1>
+        </div>
+        <!-- COLUMN 1 -->
+        <div class="kanban-column" data-id="1">
+            <div class="kanban-title">
+                <h2>Backlog</h2>
+                <button class="add-card" data-value="Backlog" column-value="1"> 
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+            </div>
+        </div>
+
+        <!-- COLUMN 2 -->
+        <div class="kanban-column" data-id="2">
+            <div class="kanban-title">
+                <h2>Doing</h2>
+                <button class="add-card" data-value="Doing" column-value="2">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+            </div>
+        </div>
+
+        <!-- COLUMN 3 -->
+        <div class="kanban-column" data-id="3">
+            <div class="kanban-title">
+                <h2>Review</h2>
+                <button class="add-card" data-value="Review" column-value="3">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+            </div>
+        </div>
+
+        <!-- COLUMN 4 -->
+        <div class="kanban-column" data-id="4">
+            <div class="kanban-title">
+                <h2>Done</h2>
+                <button class="add-card" data-value="Done" column-value="4">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+            </div>
+            <div class="kanban-cards">
+            </div>
+        </div>
+
+        <div id="addCardModal" style="display:none;">
+            <form id="addCardForm">
+                <label for="title">Title:</label>
+                <input type="text" id="title" required />
+
+                <label for="description">Description:</label>
+                <textarea id="description" required></textarea>
+                <label for="priority">Priority:</label>
+                <select id="priority" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+                <label for="link">Link:</label>
+                <input type="url" id="link" />
+                <button type="submit">Add Card</button>
+                <button type="button" id="closeModal">Cancel</button>
+            </form>
+        </div>
+
+        <div id="editCardModal" style="display:none;">
+            <form id="editCardForm">
+                <label for="edit-title">Title:</label>
+                <input type="text" id="edit-title" required />
+                <label for="edit-description">Description:</label>
+                <textarea id="edit-description" required></textarea>  
+                <label for="edit-priority">Priority:</label>
+                <select id="edit-priority" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+                <label for="edit-link">Link:</label>
+                <input type="url" id="edit-link" />
+                <button type="submit">Edit Card</button>
+                <button type="button" id="closeEditModal">Cancel</button>
+            </form>
+        </div>
+
+        <div id="viewCardModal" style="display:none;">
+            <div class="modal-content">
+                <span id="closeViewModal" style="cursor:pointer;">&times;</span>
+                <h2>Card Details</h2>
+                <p><strong>Title:</strong> <span id="view-title"></span></p>
+                <p><strong>Description:</strong> <span id="view-description"></span></p>
+                <p><strong>Priority:</strong> <span id="view-priority"></span></p>
+                <p><strong>Status:</strong> <span id="view-status"></span></p>
+                <p id="link-container" style="display:none;"><strong>Link:</strong> <a id="view-link" href="" target="_blank"></a></p>
+                <p id="created-container" style="display:none;"><strong>Created at: </strong><span id="view-created"></span></p>
+                <p id="updated-container" style="display:none;"><strong>Updated at: </strong><span id="view-updated"></span></p>
+                <p id="deleted-container" style="display:none;"><strong>Deleted at: </strong><span id="view-deleted"></span></p>
+            </div>
+        </div>
+        
+        <div id="infoModal" style="display: none;">
+            <div class="info-modal-content">
+                <span id="closeInfoModal" style="cursor:pointer;">&times;</span>
+                <h2>Notice: Discarded Tasks Board</h2>
+                <p><strong>The tasks you've discarded are stored on this board. 
+                    <br>You can restore them by clicking the restore icon or permanently delete them using the trash icon beside it.
+                    <br>To stop seeing this message, simply discard a task.</strong></p>
+                <p><img src="src/images/error2.png" alt=""></p>
+            </div>
+        </div>
+        <div id="noticeModal" style="display: none;">
+            <div class="notice-modal-content">
+                <span id="closeNoticeModal" style="cursor:pointer;">&times;</span>
+                <h2>Notice: Kanban Board is Empty</h2>
+                <p><strong>Your Kanban board is currently empty, which is why you are seeing this message. 
+                <br>To create a task, simply click the "+" button, and this message will disappear.</strong></p>
+                <p><img src="src/images/error2.png" alt=""></p>
+            </div>
+        </div>
+        <div id="notFoundModal" style="display: none;">
+            <div class="notfound-modal-content">
+                <span id="closeNotFoundModal" style="cursor:pointer;">&times;</span>
+                <h2>Error: Task Not Found</h2>
+                <p><strong>It seems that the task you are looking for could not be located. Please check if the task ID is correct or if it has been moved to another column.
+                <br>If you need further assistance, please contact support.</strong></p>
+                <p><img src="src/images/error2.png" alt=""></p>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="settingsPage" style="display:none;"></div>
+    
+    <script src="src/javascript/script.js"></script>
+    <script src="src/javascript/navbar.js"></script>  
 </body>
 </html>

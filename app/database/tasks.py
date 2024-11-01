@@ -1,52 +1,30 @@
-from app.database.database import connect_to_postgres, get_mongodb_tasks_collection
+from app.database.database import connect_to_postgres
 from app.models.task import TaskUpdate, Task
 from app.config.logging import logger
 
 
-def get_completed_tasks(user_id: str):
-    
-    def serialize_task(task):
-        task["_id"] = str(task["_id"])
-        return task
-        
-    try:
-        tasks_collection = get_mongodb_tasks_collection()
-        tasks = list(tasks_collection.find({"user_id": user_id}))
-        tasks = [serialize_task(task) for task in tasks]
-        logger.info(f"Todas as tarefas para o usuário {user_id} foram recuperadas com sucesso.")
-        return tasks
 
-    except Exception as error:
-        logger.error(f"Erro ao recuperar tarefas para o usuário {user_id}: {error}")
-        return None
-    
-
-def insert_completed_task(item_id: str, task_update: TaskUpdate):
-    try:
-        tasks_collection = get_mongodb_tasks_collection()
-        task_dict = task_update.dict()  
-        task_dict["status"] = task_dict["status"].value  
-        updated_task = tasks_collection.insert_one({"item_id": item_id, **task_dict})
-        
-    except Exception as error:
-        logger.info(f"Error inserting task: {error}")
-        return False
-    else:  
-        logger.info(f"Tarefa inserida no MongoDB com ID: {updated_task.inserted_id}")  
-        return True
-    
 
 def insert_task(task: Task):
     connection, cursor = connect_to_postgres()
     
     query = """
-    INSERT INTO tasks (title, type, description, status, user_id) 
-    VALUES (%s, %s, %s, %s, %s) RETURNING id;
+    INSERT INTO tasks (title, description, status, priority, link, user_id, active) 
+    VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
     """
+    
     try:
-        cursor.execute(query, (task.title, task.type, task.description, task.status, task.user_id))
-        task_id = cursor.fetchone()[0]  # Obter o ID gerado
-        connection.commit()  # Commit da transação
+        cursor.execute(query, (
+            task.title,
+            task.description,
+            task.status.value,
+            task.priority.value,
+            task.link,
+            task.user_id,
+            task.active        # This will default to True
+        ))
+        task_id = cursor.fetchone()[0] 
+        connection.commit() 
         return task_id
     except Exception as error:
         logger.info(f"Error inserting task: {error}")
@@ -57,17 +35,31 @@ def insert_task(task: Task):
         connection.close()
 
 
+
 def get_task(task_id: str, user_id: str):
     connection, cursor = connect_to_postgres()
     
     query = "SELECT * FROM tasks WHERE id = %s AND user_id = %s;"
     
     try:
-        cursor.execute(query, (task_id, user_id, ))
+        cursor.execute(query, (task_id, user_id,))
         task = cursor.fetchone()
+        
         if task:
-            return Task(id=task[0], title=task[1], type=task[2], description=task[3], status=task[4], created_at=task[5])
-        return None
+            return Task(
+                id=task[0],
+                user_id=task[1],
+                title=task[2],
+                description=task[3],
+                status=task[4],
+                priority=task[5],
+                link=task[6],
+                created_at=task[7],
+                updated_at=task[8],
+                deleted_at=task[9],
+                active=task[10]
+            )
+        return task
     except Exception as error:
         logger.error(f"Error fetching task: {error}")
         return None
@@ -76,17 +68,72 @@ def get_task(task_id: str, user_id: str):
         connection.close()
         
         
-def get_all_tasks(user_id):
+def get_searchbar(search_term: str, user_id: str, active: str):
     connection, cursor = connect_to_postgres()
-    query = "SELECT * FROM tasks WHERE user_id = %s;"
+    
+    query = """
+    SELECT * 
+    FROM tasks
+    WHERE 
+        (title LIKE CONCAT('%%', %s, '%%')
+        OR description LIKE CONCAT('%%', %s, '%%')
+        OR link LIKE CONCAT('%%', %s, '%%'))
+        AND user_id = %s
+        AND active = %s
+    ORDER BY created_at DESC
+    LIMIT 1;
+    """
+    
+    try:
+        cursor.execute(query, (search_term, search_term, search_term, user_id, active))
+        
+        task = cursor.fetchone()
+        
+        if task:
+            return Task(
+                id=task[0],
+                user_id=task[1],
+                title=task[2],
+                description=task[3],
+                status=task[4],
+                priority=task[5],
+                link=task[6],
+                created_at=task[7],
+                updated_at=task[8],
+                deleted_at=task[9]
+            )
+        return None 
+    except Exception as error:
+        logger.error(f"Error fetching task: {error}")
+        return None
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def get_all_tasks(user_id):
+    
+    connection, cursor = connect_to_postgres()
+    query = "SELECT * FROM tasks WHERE user_id = %s AND active = TRUE ORDER BY created_at DESC;"
     tasks = [] 
     
     try:
-        cursor.execute(query, (user_id, ))
+        cursor.execute(query, (user_id,))
         all_tasks = cursor.fetchall()  
         for task in all_tasks:
-            tasks.append(Task(id=task[0], user_id=task[1], title=task[2], type=task[3], description=task[4], status=task[5], created_at=task[6]))
-        return tasks 
+            tasks.append(Task(
+                id=task[0],
+                user_id=task[1],
+                title=task[2],
+                description=task[3],
+                status=task[4],
+                priority=task[5],
+                link=task[6],
+                created_at=task[7],
+                updated_at=task[8],  # Ensure this is a datetime
+                active=True
+            ))
+        return tasks  # Return the list of Task instances
     except Exception as error:
         logger.error(f"Error fetching tasks: {error}")
         return None
@@ -94,17 +141,76 @@ def get_all_tasks(user_id):
         cursor.close()
         connection.close()
 
-def update_task(task_id: str, task: TaskUpdate):
+
+
+def get_all_deleted_tasks(user_id):
     connection, cursor = connect_to_postgres()
-    query = """
-    UPDATE tasks 
-    SET title = %s, type = %s, description = %s, status = %s 
-    WHERE id = %s and user_id = %s;
-    """
+    query = "SELECT * FROM tasks WHERE user_id = %s AND active = False ORDER BY deleted_at DESC;"
+    tasks = [] 
     
     try:
-        cursor.execute(query, (task.title, task.type, task.description, task.status, task_id, task.user_id))
-        connection.commit()  
+        cursor.execute(query, (user_id,))
+        all_tasks = cursor.fetchall()  
+        for task in all_tasks:
+            tasks.append(Task(
+                id=task[0],
+                user_id=task[1],
+                title=task[2],
+                description=task[3],
+                status=task[4],
+                priority=task[5],
+                link=task[6],
+                created_at=task[7],
+                updated_at=task[8],  # Ensure this is a datetime
+                deleted_at=task[9],
+                active=False
+                
+            ))
+        return tasks  # Return the list of Task instances
+    except Exception as error:
+        logger.error(f"Error fetching tasks: {error}")
+        return None
+    finally:
+        cursor.close()
+        connection.close()
+
+
+def update_task(task_id: str, task: TaskUpdate):
+    connection, cursor = connect_to_postgres()
+    
+    fields_to_update = []
+    values = []
+    
+    if task.title is not None:
+        fields_to_update.append("title = %s")
+        values.append(task.title)
+    if task.description is not None:
+        fields_to_update.append("description = %s")
+        values.append(task.description)
+    if task.status is not None:
+        fields_to_update.append("status = %s")
+        values.append(task.status)
+    if task.priority is not None:
+        fields_to_update.append("priority = %s")
+        values.append(task.priority)
+    if task.link is not None:
+        fields_to_update.append("link = %s")
+        values.append(task.link)
+    if task.updated_at is not None:
+        fields_to_update.append("updated_at = %s")
+        values.append(task.updated_at)
+    
+    if not fields_to_update:
+        logger.warning("No fields provided for update")
+        return None
+    
+    # Add the WHERE clause for task_id and user_id
+    query = f"UPDATE tasks SET {', '.join(fields_to_update)} WHERE id = %s AND user_id = %s"
+    values.extend([task_id, task.user_id])
+    
+    try:
+        cursor.execute(query, tuple(values))
+        connection.commit()
         return task_id
     except Exception as error:
         logger.error(f"Error updating task: {error}")
@@ -115,13 +221,60 @@ def update_task(task_id: str, task: TaskUpdate):
         connection.close()
         
 
+def activate_task(task_id: str, user_id: str):
+    connection, cursor = connect_to_postgres()
+    query = """
+    UPDATE tasks 
+    SET active = TRUE, deleted_at = NULL, updated_at = CURRENT_TIMESTAMP
+    WHERE id = %s AND user_id = %s;
+    """
+
+    try:
+        cursor.execute(query, (task_id, user_id))
+        connection.commit()
+        logger.info(f"Task {task_id} activated successfully.")
+        return task_id
+    except Exception as error:
+        logger.error(f"Error activating task: {error}")
+        connection.rollback()
+        return None
+    finally:
+        cursor.close()
+        connection.close()
+        
+        
 def delete_task(task_id: str, user_id: str):
     connection, cursor = connect_to_postgres()
-    query = "DELETE FROM tasks WHERE id = %s and user_id = %s;"
-    
+    query = """
+    UPDATE tasks 
+    SET active = FALSE, deleted_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+    WHERE id = %s AND user_id = %s;
+    """
+
     try:
-        cursor.execute(query, (task_id, user_id, ))
+        cursor.execute(query, (task_id, user_id))
         connection.commit()
+        logger.info(f"Task {task_id} deleted successfully.")
+        return task_id
+    except Exception as error:
+        logger.error(f"Error deleting task: {error}")
+        connection.rollback()
+        return None
+    finally:
+        cursor.close()
+        connection.close()
+        
+def full_delete_task(task_id: str, user_id: str):
+    connection, cursor = connect_to_postgres()
+    query = """
+    DELETE FROM tasks
+    WHERE id = %s AND user_id = %s;
+    """
+
+    try:
+        cursor.execute(query, (task_id, user_id))
+        connection.commit()
+        logger.info(f"Task {task_id} full deleted successfully.")
         return task_id
     except Exception as error:
         logger.error(f"Error deleting task: {error}")

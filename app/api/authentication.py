@@ -21,7 +21,7 @@ def login(user: OAuth2PasswordRequestForm = Depends()):
 
         
 @router.post("/logout")
-def logout(token: str = Depends(user_controller.return_token)):
+def logout(token: dict = Depends(user_controller.verify_token_logout)):
     revoked_token = user_controller.logout(token)
     if revoked_token:
         return JSONResponse(status_code=status.HTTP_200_OK, content={"msg": f"The token has been revoked! {revoked_token}"})

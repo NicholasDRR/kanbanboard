@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CodePen - Password Strength validator</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+  <link rel="stylesheet" href="src/components/password/style.css">
+</head>
+<body>
+<!-- partial:index.partial.html--> 
+<div id="box">
+  <form id="myform-search" method="post" autocomplete="off">
+    <h1 id="passwordTitle">Change Password <span>Choose a good one!</span></h1>
+    <p>
+      <input type="password" value="" placeholder="Old Password" id="o-p" class="password">
+      <button class="unmask" type="button"></button>
+    </p>
+    <p>
+      <input type="password" value="" placeholder="New Password" id="p" class="password">
+      <button class="unmask" type="button"></button>
+    </p>
+    <p>     
+      <input type="password" value="" placeholder="Confirm New Password" id="p-c" class="password">
+      <button class="unmask" type="button"></button>
+    </p>
+    <div id="strong"><span></span></div>
+    <div id="valid"></div>
+    <small>Must be 6+ characters long and contain at least 1 upper case letter, 1 number, 1 special character</small>
+    <div id="password-warning" style="color: red;"></div>
+    <p>
+      <button type="submit">Submit</button>
+    </p>
+  </form>
+
+  <div id="errorModal" style="display: none;">
+    <div class="password-modal-content">
+        <span id="closeErrorModal" style="cursor:pointer;">&times;</span>
+        <h2>Error: Password Change Failed</h2>
+        <p><strong>We were unable to change your password. Please ensure your current password is correct and that your new password meets all requirements. 
+          <br>If the problem persists, try again later or contact support.</strong></p>
+        <p><img src="src/images/error2.png" alt=""></p>
+    </div>
+  </div>
+
+  <div id="successModal" style="display: none;">
+    <div class="password-modal-content">
+        <span id="closeSuccessModal" style="cursor:pointer;">&times;</span>
+        <h2>Success: Password Changed</h2>
+        <p><strong>We were unable to change your password. Your password has been successfully changed. You can now use your new password to log in.
+          <br>If you did not initiate this change, please contact support immediately.</strong></p>
+        <p><img src="src/images/success.png" alt=""></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- partial -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src="src/javascript/settings.js"></script>
+
+</body>
+</html>

@@ -1,29 +1,30 @@
-FROM python:3.10
+FROM python:3.10-slim
 
-# Set the working directory
+# Define o diretório de trabalho
 WORKDIR /code
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    libsystemd-dev \
-    && rm -rf /var/lib/apt/lists/*  # Clean up APT when done
+# Instala dependências do sistema, incluindo libssl-dev e ca-certificates
+RUN apt-get update && \
+    apt-get install -y libsystemd-dev gcc libssl-dev ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
-# Copy the requirements file separately to leverage Docker layer caching
+RUN update-ca-certificates
+
+# Atualiza o pip e instala as dependências do Python
 COPY ./requirements.txt /code/requirements.txt
-
-# Install dependencies
 RUN pip install --upgrade pip \
     && pip install "cython<3.0.0" wheel \
     && pip install "pyyaml==5.4.1" --no-build-isolation \
     && pip install python-multipart \
     && pip install -r /code/requirements.txt
 
-# Copy application files
+# Copia os arquivos da aplicação e o .env para o container
 COPY ./app /code/app
 COPY ./.env /code/
+COPY ./init-db/ /init-db
 
-# Set PYTHONPATH environment variable
-ENV PYTHONPATH="${PYTHONPATH}:/code/app"
+# Define o PYTHONPATH para incluir o diretório da aplicação
+ENV PYTHONPATH=/code/app
 
-# Command to run the app
+# Comando para iniciar o servidor
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

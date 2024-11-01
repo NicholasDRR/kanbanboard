@@ -35,10 +35,26 @@ class UserController:
         return get_user_by_id(user_id)
     
     def create_user(self, email: str, password: str):
-        return create_user(email, self.create_hash(password))
+        user_created = create_user(email, self.create_hash(password))
+        
+        if not user_created:
+            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail={'msg': 'Invalid data'})
+
+        return True
     
-    def update_user(self, id: str, email: str, password: str):
-        return update_user(id, email, password)
+    def update_user(self, old_password, new_password, user_id):
+        user_data = self.read_user(user_id)
+        new_password = self.create_hash(new_password)
+        
+        if not self.validate_password(password=old_password, password_hash=user_data.password):
+            raise HTTPException(status_code=status.HTTP_405_METHOD_NOT_ALLOWED, detail={'msg': 'Invalid data'})
+        
+        user_updated = update_user(password=new_password, user_id=user_id)
+        
+        if not user_updated:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail={'msg': 'Unknow ERROR'})
+        
+        return True
     
     def delete_user(self, user_id: int):
         return delete_user(user_id)
@@ -56,7 +72,7 @@ class UserController:
         if select_revoked_token(user_id=user_id, token=token):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail={"msg": "Token has been revoked"})
     
-    def return_token(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
+    def return_payload(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
         payload = self.decode_token(token)
         user_id = payload['sub'] 
         
@@ -79,6 +95,17 @@ class UserController:
         
         self.check_token_revocation(token, payload['sub'])
         return payload
+
+    def verify_token_logout(self, token: str = Depends(OAuth2PasswordBearer(tokenUrl="/auth/login"))):
+        payload = self.decode_token(token)
+        user_id = payload['sub'] 
+        
+        existing_token = self.redis_service.get_token(user_id)
+        if existing_token:
+            return token
+        
+        self.check_token_revocation(token, payload['sub'])
+        return token
     
     def login(self, user: OAuth2PasswordRequestForm):
         user_data = get_user_by_email(user.username)

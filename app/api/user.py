@@ -1,6 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, status
 from app.controllers.user import UserController
-from app.models.user import User, UserUpdate
+from app.models.user import User
+from app.api.routes import get_current_user
+from fastapi.responses import JSONResponse
 
 router = APIRouter(
     prefix="/users",
@@ -23,12 +25,15 @@ user_controller = UserController()
 
 @router.post("/user/post")
 def post_user(user: User):
-    return user_controller.create_user(user.email, user.password)
+    if user_controller.create_user(user.email, user.password):
+        return JSONResponse(status_code=status.HTTP_201_CREATED, content={"msg": "Successfully created"})
 
 
 @router.put("/user/update")
-def update_user(user_id: str, user: UserUpdate):
-    return user_controller.update_user(user_id, user.email, user.password)
+def update_user(old_password:str, new_password: str, current_user: dict = Depends(get_current_user)):
+    user_id = current_user['sub']
+    if user_controller.update_user(old_password, new_password, user_id):
+        return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content="")
 
 
 # @router.delete("/user/delete")
