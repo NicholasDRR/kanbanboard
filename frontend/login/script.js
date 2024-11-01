@@ -1,7 +1,7 @@
 const signUpButton = document.getElementById('signUp');
 const signInButton = document.getElementById('signIn');
 const container = document.getElementById('container');
-let ambient = 'localhost:8000'
+let ambient = '54.219.225.136:8000'
 const globalBackendURL = `http://${ambient}/users/user/post`
 
 
@@ -48,7 +48,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
 
     try {
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
-        const response = await axios.post('http://localhost:8000/auth/login', new URLSearchParams({
+        const response = await axios.post('http://54.219.225.136:8000/auth/login', new URLSearchParams({
             username: email,
             password: password
         }));
