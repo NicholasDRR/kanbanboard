@@ -1,4 +1,4 @@
-# run this app: http://54.219.225.136/login/
+# run this app: http://54.219.225.136/
 
 # Desafio de Desenvolvimento Full-Stack – To-Do List
 
