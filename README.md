@@ -2,7 +2,6 @@
 
 # Desafio de Desenvolvimento Full-Stack – To-Do List
 
-# O Projeto está em construção, você pode olhar o progresso nas branchs
 
 ## Objetivo
 Desenvolver uma aplicação simples de gerenciamento de tarefas (To-Do List),
