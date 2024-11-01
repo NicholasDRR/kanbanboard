@@ -19,7 +19,7 @@ services:
       POSTGRES_PASSWORD: 123
     volumes: 
       - pgdata:/var/lib/postgresql/data
-      - /home/nicho/mayo-test/init-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /home/nicho/mayo-test/DDL/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks: 
       - app-network
 
