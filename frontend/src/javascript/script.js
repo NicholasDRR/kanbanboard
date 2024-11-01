@@ -484,7 +484,7 @@ function fullDeleteTask(taskId) {
 
 function Logout() {
     $.ajax({
-        url: `http://localhost:8000/auth/logout`,
+        url: `http://${ambient}:8000/auth/logout`,
         crossDomain: true,
         type: "POST",
         headers: {
