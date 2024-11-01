@@ -21,7 +21,7 @@ RUN pip install --upgrade pip \
 # Copia os arquivos da aplicação e o .env para o container
 COPY ./app /code/app
 COPY ./.env /code/
-COPY ./DDL/ /DDL
+COPY ./init-db/ /init-db
 
 # Define o PYTHONPATH para incluir o diretório da aplicação
 ENV PYTHONPATH=/code/app
