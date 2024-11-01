@@ -5,21 +5,19 @@ let currentEditingCard;
 let globalBoard;
 let globalSearchTerm;
 // let jwtToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5YmJkMjA0NS01NWNmLTQ5MGEtOTdjYS1kMDg2MTllMGEzYjUiLCJleHAiOjE3MzI5MTEwMjR9.Yr2yZKef0MJ7x-8DtSoXs7CLpQygs6EphFkQFTvdbr8';
-let jwtToken;
+// let jwtToken;
 let ambient = 'localhost'
 const addCardButtons = document.querySelectorAll(".add-card");
 const kanbanCards = document.querySelectorAll('.kanban-card');
 const backEndUrl = 'http://54.219.225.136:8000/tasks';
 
 function getJwtToken() {
-    // return localStorage.getItem('jwtToken'); 
-    jwtToken = localStorage.getItem('jwtToken'); 
+    return localStorage.getItem('jwtToken'); 
 }
 function checkAuth() {
     const token = localStorage.getItem('jwtToken');
-    
     if (!token) {
-        window.location.href = "http://54.219.225.136:80/login"; 
+        window.location.href = "login/login.html"; 
     }
 }
 function toTitleCase(str) {
@@ -64,10 +62,6 @@ function closeModal(modalId) {
 
 $(document).ready(function() {
     checkAuth()
-    getJwtToken()
-
-
-
     $('.kanban').hide()
     $('.search_bar').hide();
 
@@ -356,7 +350,7 @@ function readTasks() {
         crossDomain: true,
         type: "GET",
         headers: {
-            'Authorization': `Bearer ${jwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json'
         }
     }).then(function(tasks, textStatus, jqXHR) {
@@ -375,7 +369,7 @@ function readDeletedTasks() {
         crossDomain: true,
         type: "GET",
         headers: {
-            'Authorization': `Bearer ${jwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json'
         },
         
@@ -394,7 +388,7 @@ function readSpecificTask(taskId) {
             crossDomain: true,
             type: "GET",
             headers: {
-                'Authorization': `Bearer ${jwtToken}`,
+                'Authorization': `Bearer ${getJwtToken()}`,
                 'Accept': 'application/json'
             },
             success: function(response) {
@@ -417,7 +411,7 @@ function readSearchBar(searchTerm) {
             crossDomain: true,
             type: "GET",
             headers: {
-                'Authorization': `Bearer ${jwtToken}`,
+                'Authorization': `Bearer ${getJwtToken()}`,
                 'Accept': 'application/json'
             },
             success: function(response, statusText, xhr) {
@@ -437,7 +431,7 @@ function activeTask(taskId) {
         crossDomain: true,
         type: "PUT",
         headers: {
-            'Authorization': `Bearer ${jwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
@@ -456,7 +450,7 @@ function deleteTask(taskId) {
         crossDomain: true,
         type: "DELETE",
         headers: {
-            'Authorization': `Bearer ${jwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
@@ -475,7 +469,7 @@ function fullDeleteTask(taskId) {
         crossDomain: true,
         type: "DELETE",
         headers: {
-            'Authorization': `Bearer ${jwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
@@ -494,13 +488,13 @@ function Logout() {
         crossDomain: true,
         type: "POST",
         headers: {
-            'Authorization': `Bearer ${jwtToken}`,
+            'Authorization': `Bearer ${getJwtToken()}`,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         success: function(response) {
             localStorage.removeItem('jwtToken');
-            window.location.href = "http://localhost:5501/frontend/login/login.html";
+            window.location.href = `../login/`;
         },
         error: function(xhr, status, error) {
             console.error("Error in logout:");
@@ -556,7 +550,7 @@ function saveTask(taskName, taskDescription, taskPriority, taskStatus, taskLink)
             crossDomain: true,
             type: "POST",
             headers: {
-                'Authorization': `Bearer ${jwtToken}`,
+                'Authorization': `Bearer ${getJwtToken()}`,
                 'Accept': 'application/json'
             },
             contentType: "application/json",
@@ -592,7 +586,7 @@ function updateTask(taskData) {
             crossDomain: true,
             type: "PUT",
             headers: {
-                'Authorization': `Bearer ${jwtToken}`,
+                'Authorization': `Bearer ${getJwtToken()}`,
                 'Accept': 'application/json'
             },
             contentType: "application/json",

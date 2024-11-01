@@ -26,26 +26,31 @@ $(document).ready(function() {
         const oldPassword = $('#o-p').val();
         const newPassword = $('#p').val();
         const confirmPassword = $('#p-c').val();
-
+    
+        console.log("Old Password:", oldPassword);
+        console.log("New Password:", newPassword);
+        console.log("Confirm Password:", confirmPassword);
+    
         if (validatePasswords(newPassword, confirmPassword)) {
             ChangeUserPassword(oldPassword, newPassword)
-                .then(({ status }) => {
-                    if (status === 204 || status === 201) { // Check for both 204 and 201
+                .then(response => {
+                    const { status } = response;
+                    if (status === 204 || status === 201) {
                         $('#successModal').css('display', 'flex');
-                        setTimeout(function() {
+                        setTimeout(() => {
                             Logout();
                         }, 4000);
                     } else {
                         $('#errorModal').css('display', 'flex');
                     }
-                    
                 })
-                .catch(({ status }) => {
-                    console.error("Error changing password:", status);
-                    $('#errorModal').css('display', 'flex'); // Show error modal on catch
+                .catch(error => {
+                    console.error("Error changing password:", error);
+                    $('#errorModal').css('display', 'flex'); 
                 });
         }
     });
+    
 
 
     function validatePasswords(newPassword, confirmPassword) {
@@ -77,20 +82,22 @@ $(document).ready(function() {
     }
 
     function ChangeUserPassword(oldPassword, newPassword) {
+        console.log('Old Password:', oldPassword);
+        console.log('New Password:', newPassword);
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: `http://${ambient}:8000/users/user/update?old_password=${oldPassword}&new_password=${newPassword}`,
+                url: `http://${ambient}:8000/users/user/update?old_password=${encodeURIComponent(oldPassword)}&new_password=${encodeURIComponent(newPassword)}`,
                 crossDomain: true,
                 type: "PUT",
                 headers: {
-                    'Authorization': `Bearer ${jwtToken}`,
+                    'Authorization': `Bearer ${getJwtToken()}`,
                     'Accept': 'application/json'
                 },
                 success: function(response, status, xhr) {
                     resolve({ response, status: xhr.status });
                 },
                 error: function(xhr, status, error) {
-                    reject({ status: xhr.status, error });
+                    reject({ status: xhr.status, error: error || 'Unknown error' });
                 }
             });
         });

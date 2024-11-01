@@ -57,7 +57,7 @@ document.getElementById('login-form').addEventListener('submit', async function 
         alert('Login successful!');
         localStorage.setItem('jwtToken', response.data.access_token);
 		
-		window.location.href = `http://localhost:5501/frontend/`;
+		window.location.href = `../`;
     } catch (error) {
         console.error('Error logging in:', error);
         alert('Error logging in. Please check your credentials and try again.'); 
